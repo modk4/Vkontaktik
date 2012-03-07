@@ -723,7 +723,7 @@ static NSImage *icon1, *icon2, *icon3, *icon4, *icon5, *icon11, *icon21, *icon31
     if (response) {
         if (response.response) {
             if ([response.response objectForKey:@"response"]) {
-				//NSLog(@"[SECOND] response: %@ (User News)\n", [response.response objectForKey:@"response"]);
+				NSLog(@"[SECOND] response: %@ (User News)\n", [response.response objectForKey:@"response"]);
 				
 				// Заполняем массив для таблицы
 				NSDictionary *responseArray = [response.response objectForKey:@"response"];
