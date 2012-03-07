@@ -869,22 +869,22 @@
 					height = 418.0f;
 					break;
 				case kNewsType6:
-					height = 274.0f;
+					height = 303.0f;
 					break;
 				case kNewsType7:
-					height = 182.0f;
+					height = 209.0f;
 					break;
 				case kNewsType8:
-					height = 573.0f;
+					height = 600.0f;
 					break;
 				case kNewsType9:
-					height = 474.0f;
+					height = 504.0f;
 					break;
 				case kNewsType10:
-					height = 573.0f;
+					height = 596.0f;
 					break;
 				case kNewsType11:
-					height = 474.0f;
+					height = 506.0f;
 					break;
 					
 				case kNewsTypeG1:
@@ -903,22 +903,22 @@
 					height = 418.0f;
 					break;
 				case kNewsTypeG6:
-					height = 274.0f;
+					height = 303.0f;
 					break;
 				case kNewsTypeG7:
-					height = 182.0f;
+					height = 209.0f;
 					break;
 				case kNewsTypeG8:
-					height = 573.0f;
+					height = 600.0f;
 					break;
 				case kNewsTypeG9:
-					height = 474.0f;
+					height = 504.0f;
 					break;
 				case kNewsTypeG10:
-					height = 573.0f;
+					height = 596.0f;
 					break;
 				case kNewsTypeG11:
-					height = 474.0f;
+					height = 506.0f;
 					break;
 					
 				default:

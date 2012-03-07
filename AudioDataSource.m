@@ -48,6 +48,13 @@
 	return result;
 }
 
+- (CGFloat)tableView:(NSTableView *)tableView heightOfRow:(NSInteger)row
+{
+	CGFloat height;
+	height = 70.0f;
+	return height;
+}
+
 - (NSUInteger)numberOfRowsInTableView:(NSTableView *)tableView
 {
     return [tableSet count];
