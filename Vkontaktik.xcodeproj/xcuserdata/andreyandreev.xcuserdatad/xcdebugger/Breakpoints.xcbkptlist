@@ -8,11 +8,11 @@
          ignoreCount = "0"
          continueAfterRunningActions = "No"
          filePath = "SampleAppAppDelegate.m"
-         timestampString = "352808126.4499"
+         timestampString = "352823531.277751"
          startingColumnNumber = "9223372036854775807"
          endingColumnNumber = "9223372036854775807"
-         startingLineNumber = "1019"
-         endingLineNumber = "1019"
+         startingLineNumber = "1017"
+         endingLineNumber = "1017"
          landmarkName = "-openNews"
          landmarkType = "5">
       </FileBreakpoint>
@@ -21,11 +21,11 @@
          ignoreCount = "0"
          continueAfterRunningActions = "No"
          filePath = "SampleAppAppDelegate.m"
-         timestampString = "352808131.726451"
+         timestampString = "352823531.277751"
          startingColumnNumber = "9223372036854775807"
          endingColumnNumber = "9223372036854775807"
-         startingLineNumber = "1030"
-         endingLineNumber = "1030"
+         startingLineNumber = "1028"
+         endingLineNumber = "1028"
          landmarkName = "-openNews"
          landmarkType = "5">
       </FileBreakpoint>
