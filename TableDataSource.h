@@ -14,7 +14,7 @@
 #import "ATNewsCellOne.h"
 #import "ATNewsCellTwo.h"
 
-@interface TableDataSource : NSObject {
+@interface TableDataSource : NSObject <NSTableViewDelegate, NSTableViewDataSource> {
 	NSMutableArray *tableSet;
 	NSUInteger choice;
 	//IBOutlet ATAudioCell *audio;

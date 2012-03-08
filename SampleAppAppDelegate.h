@@ -10,6 +10,7 @@
 #import "INAppStoreWindow.h"
 #import "EBVKAPI.h"
 #import "Const.h"
+#import "MainTable.h"
 
 #define APP_ID        @"2681452"
 #define USER_EMAIL    @"aaa.andreev@gmail.com"
@@ -24,7 +25,7 @@
 	IBOutlet NSPanel *spinPanel;
 	IBOutlet NSProgressIndicator *delayVk;
 	IBOutlet NSButton *button1, *button2, *button3, *button4, *button5;
-	IBOutlet NSTableView *wall;
+	IBOutlet MainTable *wall;
 	
 	IBOutlet NSTextField *friendsCount, *audioCount, *messageCount, *newsCount, *wallCount;
 	IBOutlet NSImageView *userPic;
@@ -41,7 +42,7 @@
 @property (assign) IBOutlet INAppStoreWindow *window;
 @property (assign) IBOutlet NSPanel *spinPanel;
 @property (assign) IBOutlet NSProgressIndicator *delayVk;
-@property (assign) IBOutlet NSTableView *wall;
+@property (assign) IBOutlet MainTable *wall;
 @property (assign) IBOutlet NSButton *button1, *button2, *button3, *button4, *button5;
 @property (assign) IBOutlet NSTextField *friendsCount, *audioCount, *messageCount, *newsCount, *wallCount;
 @property (assign) IBOutlet NSImageView *userPic;

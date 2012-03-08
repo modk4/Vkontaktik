@@ -49,6 +49,7 @@
 		5F3F774814F6940B00817383 /* ATNewsCellTwo9.m in Sources */ = {isa = PBXBuildFile; fileRef = 5F3F773B14F6940B00817383 /* ATNewsCellTwo9.m */; };
 		5F3F774914F6940B00817383 /* ATNewsCellTwo10.m in Sources */ = {isa = PBXBuildFile; fileRef = 5F3F773D14F6940B00817383 /* ATNewsCellTwo10.m */; };
 		5F3F774A14F6940B00817383 /* ATNewsCellTwo11.m in Sources */ = {isa = PBXBuildFile; fileRef = 5F3F773F14F6940B00817383 /* ATNewsCellTwo11.m */; };
+		5F4F1A941507ED9800A2F84B /* MainTable.m in Sources */ = {isa = PBXBuildFile; fileRef = 5F4F1A931507ED9800A2F84B /* MainTable.m */; };
 		5F55127F15069182009EE31B /* ATNewsCellOne5v.xib in Resources */ = {isa = PBXBuildFile; fileRef = 5F55127E15069182009EE31B /* ATNewsCellOne5v.xib */; };
 		5F55128415069352009EE31B /* QTKit.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 5F55128315069352009EE31B /* QTKit.framework */; };
 		5F7CB7C214E663E600133E77 /* ATNewsCellOne1.xib in Resources */ = {isa = PBXBuildFile; fileRef = 5F7CB7C114E663E600133E77 /* ATNewsCellOne1.xib */; };
@@ -170,6 +171,8 @@
 		5F3F774B14F694BA00817383 /* ATNewsCellTwo1.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = ATNewsCellTwo1.h; sourceTree = "<group>"; };
 		5F3F774E14F7BA4B00817383 /* ATNewsCellOne.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = ATNewsCellOne.h; sourceTree = "<group>"; };
 		5F3F774F14F7BAED00817383 /* ATNewsCellTwo.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = ATNewsCellTwo.h; sourceTree = "<group>"; };
+		5F4F1A921507ED9800A2F84B /* MainTable.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = MainTable.h; sourceTree = "<group>"; };
+		5F4F1A931507ED9800A2F84B /* MainTable.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = MainTable.m; sourceTree = "<group>"; };
 		5F55127E15069182009EE31B /* ATNewsCellOne5v.xib */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = file.xib; path = ATNewsCellOne5v.xib; sourceTree = "<group>"; };
 		5F551281150692F4009EE31B /* ATNewsCellOne5v.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = ATNewsCellOne5v.h; sourceTree = "<group>"; };
 		5F551282150692F4009EE31B /* ATNewsCellOne5v.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = ATNewsCellOne5v.m; sourceTree = "<group>"; };
@@ -324,6 +327,8 @@
 		5F2707B714DA8AD7000A24B4 /* TableDataSource */ = {
 			isa = PBXGroup;
 			children = (
+				5F4F1A921507ED9800A2F84B /* MainTable.h */,
+				5F4F1A931507ED9800A2F84B /* MainTable.m */,
 				5F2707B314DA8AD1000A24B4 /* TableDataSource.h */,
 				5F2707B414DA8AD1000A24B4 /* TableDataSource.m */,
 				5FF1A1B715056A2500CDEA3C /* AudioDataSource.h */,
@@ -630,6 +635,7 @@
 				5F3F774A14F6940B00817383 /* ATNewsCellTwo11.m in Sources */,
 				5FDC0FAC14FE59FC0003F47C /* INAppStoreWindow.m in Sources */,
 				5FF1A1B915056A2500CDEA3C /* AudioDataSource.m in Sources */,
+				5F4F1A941507ED9800A2F84B /* MainTable.m in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};

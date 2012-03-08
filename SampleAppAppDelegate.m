@@ -197,6 +197,12 @@ static NSImage *icon1, *icon2, *icon3, *icon4, *icon5, *icon11, *icon21, *icon31
 	[_window orderFront:nil];
 }
 
+-(void) observeValueForKeyPath:(NSString *)keyPath ofObject:(id)object change:(NSDictionary *)change context:(void *)context {
+    int row = [[_wall selectedCellRowIndex] intValue];
+    int col = [[_wall selectedCellColumnIndex] intValue];
+    //NSLog(@"Selected Row: %d Selected Column: %d", row, col);
+}
+
 - (void)applicationDidFinishLaunching:(NSNotification *)aNotification
 {	
     // Icon in StatusBar
@@ -246,6 +252,9 @@ static NSImage *icon1, *icon2, *icon3, *icon4, *icon5, *icon11, *icon21, *icon31
         NSLog(@"%@", [error localizedDescription]);
 		[NSApp terminate:nil];
     }
+	
+	[_wall addObserver:self forKeyPath:@"selectedCellRowIndex" options:NSKeyValueObservingOptionNew context:nil];
+    [_wall addObserver:self forKeyPath:@"selectedCellColumnIndex" options:NSKeyValueObservingOptionNew context:nil];
 	
 	[self performSelectorInBackground:@selector(initApp) withObject:nil];
 	//[self initApp];
@@ -641,7 +650,7 @@ static NSImage *icon1, *icon2, *icon3, *icon4, *icon5, *icon11, *icon21, *icon31
 	return result;
 }
 
-- (NSMutableArray *)getAudio:(NSMutableDictionary *)aid uid:(NSNumber *)uidUser
+- (NSMutableArray *)getAudio:(NSArray *)aid
 {
 	NSMutableArray *audio = nil;
 	if (![aid count]) {
@@ -649,18 +658,18 @@ static NSImage *icon1, *icon2, *icon3, *icon4, *icon5, *icon11, *icon21, *icon31
 	}
 	
 	NSString *parametrsUid = nil;
-	NSArray *keys = [aid allKeys];
-	for (int i = 0; i < [keys count]; i++) {
+	for (int i = 0; i < [aid count]; i++) {
+		NSDictionary *item = [aid objectAtIndex:i];
 		if (parametrsUid) {
-			parametrsUid = [NSString stringWithFormat:@"%@,%@", parametrsUid, [keys objectAtIndex:i]];
+			parametrsUid = [NSString stringWithFormat:@"%@,%@_%@", parametrsUid, [[item objectForKey:@"id"] stringValue], [[item objectForKey:@"aid"] stringValue]];
 		} else {
-			parametrsUid = [NSString stringWithFormat:@"%@", [keys objectAtIndex:i]];
+			parametrsUid = [NSString stringWithFormat:@"%@_%@", [[item objectForKey:@"id"] stringValue], [[item objectForKey:@"aid"] stringValue]];
 		}
 	}
 	//NSLog(@"Parametrs: %@", parametrsUid);
 	
-	EBVKAPIRequest *request = [[EBVKAPIRequest alloc] initWithMethodName: @"audio.get" //parametrsUid forKey:@"aids"
-                                                              parameters: [NSDictionary dictionaryWithObjectsAndKeys:[uidUser stringValue], @"uid", parametrsUid, @"aids", nil]	 
+	EBVKAPIRequest *request = [[EBVKAPIRequest alloc] initWithMethodName: @"audio.getById" //parametrsUid forKey:@"aids"
+                                                              parameters: [NSDictionary dictionaryWithObject:parametrsUid forKey:@"audios"]	 
                                                           responseFormat: EBJSONFormat];
 	EBVKAPIResponse *response = [[EBVKAPIResponse alloc] init];
     response = [request sendRequestWithToken: token];
@@ -785,7 +794,7 @@ static NSImage *icon1, *icon2, *icon3, *icon4, *icon5, *icon11, *icon21, *icon31
 					// Надо проверить есть ли в массиве аудио
 					BOOL isAudio = FALSE;
 					NSArray *attachments = [post objectForKey:@"attachments"];
-					NSMutableDictionary *audioDic = [NSMutableDictionary dictionary];;
+					NSMutableArray *audioDic = [NSMutableArray array];
 					if (attachments) {
 						for (int i = 0; i < [attachments count]; i++) {
 							NSDictionary *audio = [attachments objectAtIndex:i];
@@ -795,7 +804,9 @@ static NSImage *icon1, *icon2, *icon3, *icon4, *icon5, *icon11, *icon21, *icon31
 								//NSLog(@"Audio Rec: %@", audioRec);
 								//NSLog(@"Audio AID class: %@", [[audioRec objectForKey:@"aid"] class]);
 								NSNumber *aid = [audioRec objectForKey:@"aid"];
-								[audioDic setObject:aid forKey:[aid stringValue]];
+								NSNumber *uid = [audioRec objectForKey:@"owner_id"];
+								NSDictionary *newRec = [NSDictionary dictionaryWithObjectsAndKeys:aid, @"aid", uid, @"id", nil];
+								[audioDic addObject:newRec];
 							}
 						}
 					}
@@ -862,7 +873,7 @@ static NSImage *icon1, *icon2, *icon3, *icon4, *icon5, *icon11, *icon21, *icon31
 									[newUserRecord setObject:[NSNumber numberWithUnsignedInt:kNewsTypeG2] forKey:@"newsType"];
 									if (isAudio) {
 										// Другой тип, фото и аудио
-										NSArray *audioRecords = [self getAudio:audioDic uid:[profile objectForKey:@"uid"]];
+										NSArray *audioRecords = [self getAudio:audioDic];
 										if (audioRecords) {
 											[newUserRecord setObject:audioRecords forKey:AUDIO];
 											[audioRecords release];
@@ -881,7 +892,7 @@ static NSImage *icon1, *icon2, *icon3, *icon4, *icon5, *icon11, *icon21, *icon31
 										[newUserRecord setObject:[NSNumber numberWithUnsignedInt:kNewsTypeG4] forKey:@"newsType"];
 										if (isAudio) {
 											// Другой тип, видео и аудио
-											NSArray *audioRecords = [self getAudio:audioDic uid:[profile objectForKey:@"uid"]];
+											NSArray *audioRecords = [self getAudio:audioDic];
 											if (audioRecords) {
 												[newUserRecord setObject:audioRecords forKey:AUDIO];
 												[audioRecords release];
@@ -893,7 +904,7 @@ static NSImage *icon1, *icon2, *icon3, *icon4, *icon5, *icon11, *icon21, *icon31
 										// Чистое аудио
 										if (isAudio) {
 											// Другой тип, аудио
-											NSArray *audioRecords = [self getAudio:audioDic uid:[profile objectForKey:@"uid"]];
+											NSArray *audioRecords = [self getAudio:audioDic];
 											if (audioRecords) {
 												[newUserRecord setObject:audioRecords forKey:AUDIO];
 												[audioRecords release];
@@ -997,7 +1008,7 @@ static NSImage *icon1, *icon2, *icon3, *icon4, *icon5, *icon11, *icon21, *icon31
 									[newUserRecord setObject:[NSNumber numberWithUnsignedInt:kNewsTypeG3] forKey:@"newsType"];
 									if (isAudio) {
 										// Другой тип, фото и аудио
-										NSArray *audioRecords = [self getAudio:audioDic uid:[profile objectForKey:@"uid"]];
+										NSArray *audioRecords = [self getAudio:audioDic];
 										if (audioRecords) {
 											[newUserRecord setObject:audioRecords forKey:AUDIO];
 											[audioRecords release];
@@ -1016,7 +1027,7 @@ static NSImage *icon1, *icon2, *icon3, *icon4, *icon5, *icon11, *icon21, *icon31
 										[newUserRecord setObject:[NSNumber numberWithUnsignedInt:kNewsTypeG5] forKey:@"newsType"];
 										if (isAudio) {
 											// Другой тип, видео и аудио
-											NSArray *audioRecords = [self getAudio:audioDic uid:[profile objectForKey:@"uid"]];
+											NSArray *audioRecords = [self getAudio:audioDic];
 											if (audioRecords) {
 												[newUserRecord setObject:audioRecords forKey:AUDIO];
 												[audioRecords release];
@@ -1027,7 +1038,7 @@ static NSImage *icon1, *icon2, *icon3, *icon4, *icon5, *icon11, *icon21, *icon31
 										// Другое вложение
 										if (isAudio) {
 											// Другой тип, аудио
-											NSArray *audioRecords = [self getAudio:audioDic uid:[profile objectForKey:@"uid"]];
+											NSArray *audioRecords = [self getAudio:audioDic];
 											if (audioRecords) {
 												[newUserRecord setObject:audioRecords forKey:AUDIO];
 												[audioRecords release];
@@ -1121,7 +1132,7 @@ static NSImage *icon1, *icon2, *icon3, *icon4, *icon5, *icon11, *icon21, *icon31
 									[newUserRecord setObject:[NSNumber numberWithUnsignedInt:kNewsType2] forKey:@"newsType"];
 									if (isAudio) {
 										// Другой тип, фото и аудио
-										NSArray *audioRecords = [self getAudio:audioDic uid:[profile objectForKey:@"uid"]];
+										NSArray *audioRecords = [self getAudio:audioDic];
 										if (audioRecords) {
 											[newUserRecord setObject:audioRecords forKey:AUDIO];
 											[audioRecords release];
@@ -1140,7 +1151,7 @@ static NSImage *icon1, *icon2, *icon3, *icon4, *icon5, *icon11, *icon21, *icon31
 										[newUserRecord setObject:[NSNumber numberWithUnsignedInt:kNewsType4] forKey:@"newsType"];
 										if (isAudio) {
 											// Другой тип, фото и аудио
-											NSArray *audioRecords = [self getAudio:audioDic uid:[profile objectForKey:@"uid"]];
+											NSArray *audioRecords = [self getAudio:audioDic];
 											if (audioRecords) {
 												[newUserRecord setObject:audioRecords forKey:AUDIO];
 												[audioRecords release];
@@ -1150,7 +1161,7 @@ static NSImage *icon1, *icon2, *icon3, *icon4, *icon5, *icon11, *icon21, *icon31
 									} else {
 										if (isAudio) {
 											// Другой тип, фото и аудио
-											NSArray *audioRecords = [self getAudio:audioDic uid:[profile objectForKey:@"uid"]];
+											NSArray *audioRecords = [self getAudio:audioDic];
 											if (audioRecords) {
 												[newUserRecord setObject:audioRecords forKey:AUDIO];
 												[audioRecords release];
@@ -1227,7 +1238,7 @@ static NSImage *icon1, *icon2, *icon3, *icon4, *icon5, *icon11, *icon21, *icon31
 									[newUserRecord setObject:[NSNumber numberWithUnsignedInt:kNewsType3] forKey:@"newsType"];
 									if (isAudio) {
 										// Другой тип, фото и аудио
-										NSArray *audioRecords = [self getAudio:audioDic uid:[profile objectForKey:@"uid"]];
+										NSArray *audioRecords = [self getAudio:audioDic];
 										if (audioRecords) {
 											[newUserRecord setObject:audioRecords forKey:AUDIO];
 											[audioRecords release];
@@ -1246,7 +1257,7 @@ static NSImage *icon1, *icon2, *icon3, *icon4, *icon5, *icon11, *icon21, *icon31
 										[newUserRecord setObject:[NSNumber numberWithUnsignedInt:kNewsType5] forKey:@"newsType"];
 										if (isAudio) {
 											// Другой тип, фото и аудио
-											NSArray *audioRecords = [self getAudio:audioDic uid:[profile objectForKey:@"uid"]];
+											NSArray *audioRecords = [self getAudio:audioDic];
 											if (audioRecords) {
 												[newUserRecord setObject:audioRecords forKey:AUDIO];
 												[audioRecords release];
@@ -1256,7 +1267,7 @@ static NSImage *icon1, *icon2, *icon3, *icon4, *icon5, *icon11, *icon21, *icon31
 									} else {
 										if (isAudio) {
 											// Другой тип, фото и аудио
-											NSArray *audioRecords = [self getAudio:audioDic uid:[profile objectForKey:@"uid"]];
+											NSArray *audioRecords = [self getAudio:audioDic];
 											if (audioRecords) {
 												[newUserRecord setObject:audioRecords forKey:AUDIO];
 												[audioRecords release];
@@ -1361,23 +1372,27 @@ static NSImage *icon1, *icon2, *icon3, *icon4, *icon5, *icon11, *icon21, *icon31
 				NSArray *items = [responseArray objectForKey:@"wall"];
 				NSArray *profiles = [responseArray objectForKey:@"profiles"];
 				//unsigned int flag;
-				
 				for (int i = 1; i < [items count]; i++) {
 					NSDictionary *post = [items objectAtIndex:i];
-					//NSLog(@"Post: %@", post);
+					NSLog(@"Post: %@", post);
 					// Ищем автора
-					NSNumber *authorId = [post objectForKey:@"from_id"]; // Вообще то это я
+					NSNumber *authorId = [post objectForKey:@"from_id"];
 					if (!authorId || [authorId longLongValue] < 0) {
 						continue;
 					}
 					
-					NSNumber *groipId = [post objectForKey:@"from_id"]; // Будем надеяться, что это группа
+					NSNumber *groipId = [post objectForKey:@"from_id"];
 					BOOL isGroup = FALSE;
+					BOOL isFriend = FALSE;
 					if (groipId && [groipId longLongValue] < 0) {
 						// Пост взят из группы
 						isGroup = TRUE;
 						// Небходимо инвертировать в положителльное
 						groipId = [NSNumber numberWithLongLong:[groipId longLongValue] * -1];
+					} else if (groipId) {
+						// Перепост от друга, можем использовать шаблон группы
+						isFriend = TRUE;
+						groipId = [NSNumber numberWithLongLong:[groipId longLongValue]];
 					}
 					
 					NSMutableDictionary *newUserRecord;
@@ -1403,20 +1418,51 @@ static NSImage *icon1, *icon2, *icon3, *icon4, *icon5, *icon11, *icon21, *icon31
 					BOOL isAttachments = FALSE;
 					NSDictionary *attachment = [post objectForKey:@"attachment"];
 					if (attachment && ([attachment objectForKey:@"photo"] || [attachment objectForKey:@"video"] || [attachment objectForKey:@"audio"])) isAttachments = TRUE;
+					// Надо проверить есть ли в массиве аудио
+					BOOL isAudio = FALSE;
+					NSArray *attachments = [post objectForKey:@"attachments"];
+					NSMutableArray *audioDic = [NSMutableArray array];
+					if (attachments) {
+						for (int i = 0; i < [attachments count]; i++) {
+							NSDictionary *audio = [attachments objectAtIndex:i];
+							if ([[audio objectForKey:@"type"] isEqual:@"audio"]) {
+								isAudio = TRUE;
+								NSDictionary *audioRec = [audio objectForKey:@"audio"];
+								//NSLog(@"Audio Rec: %@", audioRec);
+								//NSLog(@"Audio AID class: %@", [[audioRec objectForKey:@"aid"] class]);
+								NSNumber *aid = [audioRec objectForKey:@"aid"];
+								NSNumber *uid = [audioRec objectForKey:@"owner_id"];
+								NSDictionary *newRec = [NSDictionary dictionaryWithObjectsAndKeys:aid, @"aid", uid, @"id", nil];
+								[audioDic addObject:newRec];
+							}
+						}
+					}
+					
 					//NSLog(@"Attach: %@", attachment);
 					
 					/******************/
-					if (isGroup) { // Пошли по группе
+					if (isGroup || isFriend) { // Пошли по группе
 						NSDictionary *groupProfile = nil;
 						// Найдем группу
 						int i = 0;
-						for (; i < [groups count]; i++) {
-							groupProfile = [groups objectAtIndex:i];
-							NSNumber *uid = [groupProfile objectForKey:@"gid"];
-							if (uid && [groipId longLongValue] == [uid longLongValue]) {
-								break;
+						if (isGroup) {
+							for (; i < [groups count]; i++) {
+								groupProfile = [groups objectAtIndex:i];
+								NSNumber *uid = [groupProfile objectForKey:@"gid"];
+								if (uid && [groipId longLongValue] == [uid longLongValue]) {
+									break;
+								}
+							}
+						} else {
+							for (; i < [profiles count]; i++) {
+								groupProfile = [profiles objectAtIndex:i];
+								NSNumber *uid = [groupProfile objectForKey:@"uid"];
+								if (uid && [groipId longLongValue] == [uid longLongValue]) {
+									break;
+								}
 							}
 						}
+						
 						
 						/******************/
 						if (isText) {
@@ -1428,13 +1474,22 @@ static NSImage *icon1, *icon2, *icon3, *icon4, *icon5, *icon11, *icon21, *icon31
 								newUserRecord = [NSMutableDictionary dictionary];
 								
 								// Имя и картинка группы
-								NSString *groupName = [groupProfile objectForKey:@"name"];
-								[newUserRecord setObject:groupName forKey:GROUPNAME];
+								NSString *groupName;
+								if (isFriend) {
+									groupName = [NSString stringWithFormat:@"%@ %@%@", [groupProfile objectForKey:@"first_name"], [groupProfile objectForKey:@"last_name"], [[groupProfile objectForKey:@"online"] boolValue]?@" ☻":@""];
+								} else {
+									groupName = [groupProfile objectForKey:@"name"];
+								}
+								if (groupName) {
+									[newUserRecord setObject:groupName forKey:GROUPNAME];
+								}
+								
 								NSImage *groupPic = [[NSImage alloc] initWithContentsOfURL:[NSURL URLWithString:[groupProfile objectForKey:@"photo"]]];
 								[newUserRecord setObject:groupPic forKey:GROUPPIC];
 								[groupPic release];
 								
 								NSDictionary *photoLink = [attachment objectForKey:@"photo"];
+								
 								if (photoLink) {
 									// Фотография
 									NSImage *atPic = [[NSImage alloc] initWithContentsOfURL:[NSURL URLWithString:[photoLink objectForKey:@"src_big"]]];
@@ -1443,19 +1498,48 @@ static NSImage *icon1, *icon2, *icon3, *icon4, *icon5, *icon11, *icon21, *icon31
 									
 									// ************
 									[newUserRecord setObject:[NSNumber numberWithUnsignedInt:kNewsTypeG2] forKey:@"newsType"];
-									
+									if (isAudio) {
+										// Другой тип, фото и аудио
+										NSArray *audioRecords = [self getAudio:audioDic];
+										if (audioRecords) {
+											[newUserRecord setObject:audioRecords forKey:AUDIO];
+											[audioRecords release];
+											[newUserRecord setObject:[NSNumber numberWithUnsignedInt:kNewsTypeG8] forKey:@"newsType"];
+										}
+									}
 								} else {
-									// Другое вложение
 									photoLink = [attachment objectForKey:@"video"];
 									if (photoLink) {
+										// Фотография
 										NSImage *atPic = [[NSImage alloc] initWithContentsOfURL:[NSURL URLWithString:[photoLink objectForKey:@"image_big"]]];
 										[newUserRecord setObject:atPic forKey:ATTACHMENTSPHOTO];
 										[atPic release];
 										
 										// ************
 										[newUserRecord setObject:[NSNumber numberWithUnsignedInt:kNewsTypeG4] forKey:@"newsType"];
+										if (isAudio) {
+											// Другой тип, видео и аудио
+											NSArray *audioRecords = [self getAudio:audioDic];
+											if (audioRecords) {
+												[newUserRecord setObject:audioRecords forKey:AUDIO];
+												[audioRecords release];
+												[newUserRecord setObject:[NSNumber numberWithUnsignedInt:kNewsTypeG10] forKey:@"newsType"];
+											}
+										}
 									} else {
-										continue;
+										// Audio
+										// Чистое аудио
+										if (isAudio) {
+											// Другой тип, аудио
+											NSArray *audioRecords = [self getAudio:audioDic];
+											if (audioRecords) {
+												[newUserRecord setObject:audioRecords forKey:AUDIO];
+												[audioRecords release];
+												[newUserRecord setObject:[NSNumber numberWithUnsignedInt:kNewsTypeG6] forKey:@"newsType"];
+											}
+										} else {
+											continue;
+										}
 									}
 								}
 								
@@ -1480,14 +1564,21 @@ static NSImage *icon1, *icon2, *icon3, *icon4, *icon5, *icon11, *icon21, *icon31
 							} else {
 								// Нет вложения
 								
-								// Имя и картинка группы
 								newUserRecord = [NSMutableDictionary dictionary];
 								
 								// ************
 								[newUserRecord setObject:[NSNumber numberWithUnsignedInt:kNewsTypeG1] forKey:@"newsType"];
 								
-								NSString *groupName = [groupProfile objectForKey:@"name"];
-								[newUserRecord setObject:groupName forKey:GROUPNAME];
+								// Имя и картинка группы
+								NSString *groupName;
+								if (isFriend) {
+									groupName = [NSString stringWithFormat:@"%@ %@%@", [groupProfile objectForKey:@"first_name"], [groupProfile objectForKey:@"last_name"], [[groupProfile objectForKey:@"online"] boolValue]?@" ☻":@""];
+								} else {
+									groupName = [groupProfile objectForKey:@"name"];
+								}
+								if (groupName) {
+									[newUserRecord setObject:groupName forKey:GROUPNAME];
+								}
 								NSImage *groupPic = [[NSImage alloc] initWithContentsOfURL:[NSURL URLWithString:[groupProfile objectForKey:@"photo"]]];
 								[newUserRecord setObject:groupPic forKey:GROUPPIC];
 								[groupPic release];
@@ -1520,8 +1611,15 @@ static NSImage *icon1, *icon2, *icon3, *icon4, *icon5, *icon11, *icon21, *icon31
 								newUserRecord = [NSMutableDictionary dictionary];
 								
 								// Имя и картинка группы
-								NSString *groupName = [groupProfile objectForKey:@"name"];
-								[newUserRecord setObject:groupName forKey:GROUPNAME];
+								NSString *groupName;
+								if (isFriend) {
+									groupName = [NSString stringWithFormat:@"%@ %@%@", [groupProfile objectForKey:@"first_name"], [groupProfile objectForKey:@"last_name"], [[groupProfile objectForKey:@"online"] boolValue]?@" ☻":@""];
+								} else {
+									groupName = [groupProfile objectForKey:@"name"];
+								}
+								if (groupName) {
+									[newUserRecord setObject:groupName forKey:GROUPNAME];
+								}
 								NSImage *groupPic = [[NSImage alloc] initWithContentsOfURL:[NSURL URLWithString:[groupProfile objectForKey:@"photo"]]];
 								[newUserRecord setObject:groupPic forKey:GROUPPIC];
 								[groupPic release];
@@ -1534,20 +1632,48 @@ static NSImage *icon1, *icon2, *icon3, *icon4, *icon5, *icon11, *icon21, *icon31
 									[atPic release];
 									
 									// ************
-									[newUserRecord setObject:[NSNumber numberWithUnsignedInt:kNewsTypeG3	] forKey:@"newsType"];
-									
+									[newUserRecord setObject:[NSNumber numberWithUnsignedInt:kNewsTypeG3] forKey:@"newsType"];
+									if (isAudio) {
+										// Другой тип, фото и аудио
+										NSArray *audioRecords = [self getAudio:audioDic];
+										if (audioRecords) {
+											[newUserRecord setObject:audioRecords forKey:AUDIO];
+											[audioRecords release];
+											[newUserRecord setObject:[NSNumber numberWithUnsignedInt:kNewsTypeG9] forKey:@"newsType"];
+										}
+									}
 								} else {
-									// Другое вложение
 									photoLink = [attachment objectForKey:@"video"];
 									if (photoLink) {
+										// Фотография
 										NSImage *atPic = [[NSImage alloc] initWithContentsOfURL:[NSURL URLWithString:[photoLink objectForKey:@"image_big"]]];
 										[newUserRecord setObject:atPic forKey:ATTACHMENTSPHOTO];
 										[atPic release];
 										
 										// ************
 										[newUserRecord setObject:[NSNumber numberWithUnsignedInt:kNewsTypeG5] forKey:@"newsType"];
+										if (isAudio) {
+											// Другой тип, видео и аудио
+											NSArray *audioRecords = [self getAudio:audioDic];
+											if (audioRecords) {
+												[newUserRecord setObject:audioRecords forKey:AUDIO];
+												[audioRecords release];
+												[newUserRecord setObject:[NSNumber numberWithUnsignedInt:kNewsTypeG11] forKey:@"newsType"];
+											}
+										}
 									} else {
-										continue;
+										// Другое вложение
+										if (isAudio) {
+											// Другой тип, аудио
+											NSArray *audioRecords = [self getAudio:audioDic];
+											if (audioRecords) {
+												[newUserRecord setObject:audioRecords forKey:AUDIO];
+												[audioRecords release];
+												[newUserRecord setObject:[NSNumber numberWithUnsignedInt:kNewsTypeG7] forKey:@"newsType"];
+											}
+										} else {
+											continue;
+										}
 									}
 								}
 								
@@ -1573,14 +1699,21 @@ static NSImage *icon1, *icon2, *icon3, *icon4, *icon5, *icon11, *icon21, *icon31
 								// Без вложения
 								// Значит этого не может быть!!! TO DO
 								
-								// Имя и картинка группы
 								newUserRecord = [NSMutableDictionary dictionary];
 								
 								// ************
 								[newUserRecord setObject:[NSNumber numberWithUnsignedInt:kNewsTypeG5] forKey:@"newsType"];
 								
-								NSString *groupName = [groupProfile objectForKey:@"name"];
-								[newUserRecord setObject:groupName forKey:GROUPNAME];
+								// Имя и картинка группы
+								NSString *groupName;
+								if (isFriend) {
+									groupName = [NSString stringWithFormat:@"%@ %@%@", [groupProfile objectForKey:@"first_name"], [groupProfile objectForKey:@"last_name"], [[groupProfile objectForKey:@"online"] boolValue]?@" ☻":@""];
+								} else {
+									groupName = [groupProfile objectForKey:@"name"];
+								}
+								if (groupName) {
+									[newUserRecord setObject:groupName forKey:GROUPNAME];
+								}
 								NSImage *groupPic = [[NSImage alloc] initWithContentsOfURL:[NSURL URLWithString:[groupProfile objectForKey:@"photo"]]];
 								[newUserRecord setObject:groupPic forKey:GROUPPIC];
 								[groupPic release];
@@ -1624,19 +1757,46 @@ static NSImage *icon1, *icon2, *icon3, *icon4, *icon5, *icon11, *icon21, *icon31
 									
 									// ************
 									[newUserRecord setObject:[NSNumber numberWithUnsignedInt:kNewsType2] forKey:@"newsType"];
-									
+									if (isAudio) {
+										// Другой тип, фото и аудио
+										NSArray *audioRecords = [self getAudio:audioDic];
+										if (audioRecords) {
+											[newUserRecord setObject:audioRecords forKey:AUDIO];
+											[audioRecords release];
+											[newUserRecord setObject:[NSNumber numberWithUnsignedInt:kNewsType8] forKey:@"newsType"];
+										}
+									}
 								} else {
-									// Другое вложение
 									photoLink = [attachment objectForKey:@"video"];
 									if (photoLink) {
+										// Фотография
 										NSImage *atPic = [[NSImage alloc] initWithContentsOfURL:[NSURL URLWithString:[photoLink objectForKey:@"image_big"]]];
 										[newUserRecord setObject:atPic forKey:ATTACHMENTSPHOTO];
 										[atPic release];
 										
 										// ************
 										[newUserRecord setObject:[NSNumber numberWithUnsignedInt:kNewsType4] forKey:@"newsType"];
+										if (isAudio) {
+											// Другой тип, фото и аудио
+											NSArray *audioRecords = [self getAudio:audioDic];
+											if (audioRecords) {
+												[newUserRecord setObject:audioRecords forKey:AUDIO];
+												[audioRecords release];
+												[newUserRecord setObject:[NSNumber numberWithUnsignedInt:kNewsType10] forKey:@"newsType"];
+											}
+										}
 									} else {
-										continue;
+										if (isAudio) {
+											// Другой тип, фото и аудио
+											NSArray *audioRecords = [self getAudio:audioDic];
+											if (audioRecords) {
+												[newUserRecord setObject:audioRecords forKey:AUDIO];
+												[audioRecords release];
+												[newUserRecord setObject:[NSNumber numberWithUnsignedInt:kNewsType6] forKey:@"newsType"];
+											}
+										} else {
+											continue;
+										}
 									}
 								}
 								
@@ -1703,19 +1863,46 @@ static NSImage *icon1, *icon2, *icon3, *icon4, *icon5, *icon11, *icon21, *icon31
 									
 									// ************
 									[newUserRecord setObject:[NSNumber numberWithUnsignedInt:kNewsType3] forKey:@"newsType"];
-									
+									if (isAudio) {
+										// Другой тип, фото и аудио
+										NSArray *audioRecords = [self getAudio:audioDic];
+										if (audioRecords) {
+											[newUserRecord setObject:audioRecords forKey:AUDIO];
+											[audioRecords release];
+											[newUserRecord setObject:[NSNumber numberWithUnsignedInt:kNewsType9] forKey:@"newsType"];
+										}
+									}
 								} else {
-									// Другое вложение
 									photoLink = [attachment objectForKey:@"video"];
 									if (photoLink) {
+										// Фотография
 										NSImage *atPic = [[NSImage alloc] initWithContentsOfURL:[NSURL URLWithString:[photoLink objectForKey:@"image_big"]]];
 										[newUserRecord setObject:atPic forKey:ATTACHMENTSPHOTO];
 										[atPic release];
 										
 										// ************
 										[newUserRecord setObject:[NSNumber numberWithUnsignedInt:kNewsType5] forKey:@"newsType"];
+										if (isAudio) {
+											// Другой тип, фото и аудио
+											NSArray *audioRecords = [self getAudio:audioDic];
+											if (audioRecords) {
+												[newUserRecord setObject:audioRecords forKey:AUDIO];
+												[audioRecords release];
+												[newUserRecord setObject:[NSNumber numberWithUnsignedInt:kNewsType11] forKey:@"newsType"];
+											}
+										}
 									} else {
-										continue;
+										if (isAudio) {
+											// Другой тип, фото и аудио
+											NSArray *audioRecords = [self getAudio:audioDic];
+											if (audioRecords) {
+												[newUserRecord setObject:audioRecords forKey:AUDIO];
+												[audioRecords release];
+												[newUserRecord setObject:[NSNumber numberWithUnsignedInt:kNewsType7] forKey:@"newsType"];
+											}
+										} else {
+											continue;
+										}
 									}
 								}
 								
@@ -1796,13 +1983,33 @@ static NSImage *icon1, *icon2, *icon3, *icon4, *icon5, *icon11, *icon21, *icon31
 - (IBAction) btnInCellClicked:(id)sender {
     NSInteger row = [_wall rowForView:sender];
 	if (row == -1) {
-		return;
+		// Проверим, если мы в новосят или на стене
+		row = [[_wall selectedCellRowIndex] integerValue];
+		if (row == -1) {
+			return;
+		}
 	}
 
 	TableDataSource *table = (id)_wall.dataSource;
 	NSArray *tableArray = table.tableSet;
     NSDictionary *entity = [tableArray objectAtIndex:row];
-    NSString *url = [entity objectForKey:URL];
+	NSString *url = nil;
+	
+	NSInteger rowAudio = -1;
+	if (table.choice == kNews) {
+		// Ищем массив аудио в записях новостей или на стене
+		NSArray *audio = [entity objectForKey:AUDIO];
+		if (audio) {
+			// Ищем индекс в таблице аудио
+			ATNewsCellOne6 *cell = [_wall selectedCell];
+			rowAudio = [cell.wall rowForView:sender];
+			NSDictionary *audioRec = [audio objectAtIndex:rowAudio];
+			url = [audioRec objectForKey:URL];
+		}
+	} else {
+		url = [entity objectForKey:URL];
+	}
+	
 	if (!url) {
 		return;
 	}

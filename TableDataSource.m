@@ -945,6 +945,22 @@
 	}*/
 }
 
+//- (NSPoint)convertPoint:(NSPoint)aPoint fromView:(NSView *)aView;
+//- (NSPoint)convertPoint:(NSPoint)aPoint toView:(NSView *)aView;
+
+-(id)tableView:(NSTableView *)tableView objectValueForTableColumn:(NSTableColumn *)tableColumn row:(NSInteger)row {
+	//NSLog(@"Row:%ld", row);
+    return [NSNumber numberWithLong:row+1];
+}
+
+/*-(void)mouseDown:(NSEvent *)theEvent {
+    NSPoint p = [self convertPoint:[theEvent locationInWindow] fromView:nil];
+    long column = [self columnAtPoint:p];
+    long row = [self rowAtPoint:p];
+    NSLog(@"Col %ld, Row %ld", column, row);
+    [super mouseDown:theEvent];
+}*/
+
 /*- (CGFloat)tableView:(NSTableView *)tableView heightForRowAtIndexPath:(NSIndexPath *)indexPath;
 {
 	//NSString *text = [items objectAtIndex:[indexPath row]];
