@@ -8,13 +8,13 @@
 //	Video as Image
 
 #import <Cocoa/Cocoa.h>
-#import <QTKit/QTKit.h>
+#import <WebKit/WebKit.h>
 
 @interface ATNewsCellOne5v : NSTableCellView {
 	
 	IBOutlet NSTextField *name, *timeMessage;
 //	IBOutlet NSTextView *message;
-	IBOutlet QTMovieView *movie;
+	IBOutlet WebView *movie;
 	IBOutlet NSImageView *pic;//, *attachments;
 	
 	NSString *_reusableIdentifier;
@@ -23,7 +23,7 @@
 
 @property (assign) NSTextField *name, *timeMessage;
 //@property (assign) NSTextView *message;
-@property (assign) QTMovieView *movie;
+@property (assign) WebView *movie;
 @property (assign) NSImageView *pic;//, *attachments;
 @property (copy) NSString *reusableIdentifier;
 

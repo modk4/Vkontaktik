@@ -7,10 +7,13 @@
 //
 
 #import <Cocoa/Cocoa.h>
+#import <WebKit/WebKit.h>
 #import "INAppStoreWindow.h"
 #import "EBVKAPI.h"
 #import "Const.h"
 #import "MainTable.h"
+#import "MAAttachedWindow.h"
+#import "ATButton.h"
 
 #define APP_ID        @"2681452"
 #define USER_EMAIL    @"aaa.andreev@gmail.com"
@@ -23,8 +26,9 @@
 @interface SampleAppAppDelegate : NSObject <NSApplicationDelegate> {
     INAppStoreWindow *_window;
 	IBOutlet NSPanel *spinPanel;
-	IBOutlet NSProgressIndicator *delayVk;
+	IBOutlet NSLevelIndicator *delayVk;
 	IBOutlet NSButton *button1, *button2, *button3, *button4, *button5;
+	IBOutlet NSButton *openVideo;
 	IBOutlet MainTable *wall;
 	
 	IBOutlet NSTextField *friendsCount, *audioCount, *messageCount, *newsCount, *wallCount;
@@ -33,19 +37,28 @@
 	
 	NSSound *sound;
 	NSButton *currentPlay;
-	NSInteger currentSoundRow;
+	//NSInteger currentSoundRow;
 	
 	NSMutableArray *friendsArray, *newsArray, *messageArray, *wallArray, *audioArray;
 	NSTimer *updateTimer;
+	
+	MAAttachedWindow *videoWindow;
+	IBOutlet NSView *videoView;
+	IBOutlet WebView *videoWebView;
+	
+	id currentSender;
 }
 
 @property (assign) IBOutlet INAppStoreWindow *window;
 @property (assign) IBOutlet NSPanel *spinPanel;
-@property (assign) IBOutlet NSProgressIndicator *delayVk;
+@property (assign) IBOutlet NSLevelIndicator *delayVk;
 @property (assign) IBOutlet MainTable *wall;
 @property (assign) IBOutlet NSButton *button1, *button2, *button3, *button4, *button5;
+@property (assign) IBOutlet NSButton *openVideo;
 @property (assign) IBOutlet NSTextField *friendsCount, *audioCount, *messageCount, *newsCount, *wallCount;
 @property (assign) IBOutlet NSImageView *userPic;
+//@property (assign) IBOutlet NSView *videoView;
+@property (assign) IBOutlet WebView *videoWebView;
 @property (retain) EBVKAPIToken *token;
 @property (retain) NSMutableArray *friendsArray, *newsArray, *messageArray, *wallArray, *audioArray;
 @property (retain) NSTimer *updateTimer;
@@ -55,6 +68,9 @@
 - (IBAction) performClick3:(id)sender;
 - (IBAction) performClick4:(id)sender;
 - (IBAction) performClick5:(id)sender;
+
+- (IBAction) closeVideo:(id)sender;
+- (IBAction) openVideo:(id)sender;
 
 - (IBAction)btnInCellClicked:(id)sender;
 @end

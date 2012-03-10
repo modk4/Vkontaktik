@@ -44,6 +44,13 @@
     [super mouseDown:theEvent];
 }
 
+- (void)dealloc {
+	[selectedCellRowIndex release];
+	[selectedCellColumnIndex release];
+	[customSelectedCell release];
+    [super dealloc];
+}
+
 /*- (void)drawRect:(NSRect)dirtyRect
 {
     // Drawing code here.

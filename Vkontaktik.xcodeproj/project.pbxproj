@@ -13,6 +13,7 @@
 		03970F0A1315CE4400F15C7E /* Credits.rtf in Resources */ = {isa = PBXBuildFile; fileRef = 03970F081315CE4400F15C7E /* Credits.rtf */; };
 		03970F0D1315CE4400F15C7E /* SampleAppAppDelegate.m in Sources */ = {isa = PBXBuildFile; fileRef = 03970F0C1315CE4400F15C7E /* SampleAppAppDelegate.m */; };
 		03970F101315CE4400F15C7E /* MainMenu.xib in Resources */ = {isa = PBXBuildFile; fileRef = 03970F0E1315CE4400F15C7E /* MainMenu.xib */; };
+		5F18513E1508DA3D0065D7A9 /* WebKit.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 5F18513D1508DA3D0065D7A9 /* WebKit.framework */; };
 		5F2707B514DA8AD1000A24B4 /* TableDataSource.m in Sources */ = {isa = PBXBuildFile; fileRef = 5F2707B414DA8AD1000A24B4 /* TableDataSource.m */; };
 		5F2707D214DAFD72000A24B4 /* EBVKAPIRequest.m in Sources */ = {isa = PBXBuildFile; fileRef = 5F2707C814DAFD71000A24B4 /* EBVKAPIRequest.m */; };
 		5F2707D314DAFD72000A24B4 /* EBSmartURLConnection.m in Sources */ = {isa = PBXBuildFile; fileRef = 5F2707CA14DAFD71000A24B4 /* EBSmartURLConnection.m */; };
@@ -50,8 +51,8 @@
 		5F3F774914F6940B00817383 /* ATNewsCellTwo10.m in Sources */ = {isa = PBXBuildFile; fileRef = 5F3F773D14F6940B00817383 /* ATNewsCellTwo10.m */; };
 		5F3F774A14F6940B00817383 /* ATNewsCellTwo11.m in Sources */ = {isa = PBXBuildFile; fileRef = 5F3F773F14F6940B00817383 /* ATNewsCellTwo11.m */; };
 		5F4F1A941507ED9800A2F84B /* MainTable.m in Sources */ = {isa = PBXBuildFile; fileRef = 5F4F1A931507ED9800A2F84B /* MainTable.m */; };
-		5F55127F15069182009EE31B /* ATNewsCellOne5v.xib in Resources */ = {isa = PBXBuildFile; fileRef = 5F55127E15069182009EE31B /* ATNewsCellOne5v.xib */; };
-		5F55128415069352009EE31B /* QTKit.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 5F55128315069352009EE31B /* QTKit.framework */; };
+		5F7A36EA150A65A500989D44 /* ATButton.m in Sources */ = {isa = PBXBuildFile; fileRef = 5F7A36E9150A65A500989D44 /* ATButton.m */; };
+		5F7A36EE150A70B300989D44 /* MAAttachedWindow.m in Sources */ = {isa = PBXBuildFile; fileRef = 5F7A36ED150A70B300989D44 /* MAAttachedWindow.m */; };
 		5F7CB7C214E663E600133E77 /* ATNewsCellOne1.xib in Resources */ = {isa = PBXBuildFile; fileRef = 5F7CB7C114E663E600133E77 /* ATNewsCellOne1.xib */; };
 		5F7CB7C614E7DD8100133E77 /* ATNewsCellOne1.m in Sources */ = {isa = PBXBuildFile; fileRef = 5F7CB7C514E7DD8100133E77 /* ATNewsCellOne1.m */; };
 		5F7CB7CF14E808C300133E77 /* ATNewsCellOne2.xib in Resources */ = {isa = PBXBuildFile; fileRef = 5F7CB7CE14E808C300133E77 /* ATNewsCellOne2.xib */; };
@@ -102,6 +103,7 @@
 		03970F0B1315CE4400F15C7E /* SampleAppAppDelegate.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = SampleAppAppDelegate.h; sourceTree = "<group>"; };
 		03970F0C1315CE4400F15C7E /* SampleAppAppDelegate.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = SampleAppAppDelegate.m; sourceTree = "<group>"; };
 		03970F0F1315CE4400F15C7E /* en */ = {isa = PBXFileReference; lastKnownFileType = file.xib; name = en; path = en.lproj/MainMenu.xib; sourceTree = "<group>"; };
+		5F18513D1508DA3D0065D7A9 /* WebKit.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = WebKit.framework; path = System/Library/Frameworks/WebKit.framework; sourceTree = SDKROOT; };
 		5F2707B314DA8AD1000A24B4 /* TableDataSource.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = TableDataSource.h; sourceTree = "<group>"; };
 		5F2707B414DA8AD1000A24B4 /* TableDataSource.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = TableDataSource.m; sourceTree = "<group>"; };
 		5F2707C614DAFD70000A24B4 /* EBVKAPI.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = EBVKAPI.h; sourceTree = "<group>"; };
@@ -173,10 +175,10 @@
 		5F3F774F14F7BAED00817383 /* ATNewsCellTwo.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = ATNewsCellTwo.h; sourceTree = "<group>"; };
 		5F4F1A921507ED9800A2F84B /* MainTable.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = MainTable.h; sourceTree = "<group>"; };
 		5F4F1A931507ED9800A2F84B /* MainTable.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = MainTable.m; sourceTree = "<group>"; };
-		5F55127E15069182009EE31B /* ATNewsCellOne5v.xib */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = file.xib; path = ATNewsCellOne5v.xib; sourceTree = "<group>"; };
-		5F551281150692F4009EE31B /* ATNewsCellOne5v.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = ATNewsCellOne5v.h; sourceTree = "<group>"; };
-		5F551282150692F4009EE31B /* ATNewsCellOne5v.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = ATNewsCellOne5v.m; sourceTree = "<group>"; };
-		5F55128315069352009EE31B /* QTKit.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = QTKit.framework; path = System/Library/Frameworks/QTKit.framework; sourceTree = SDKROOT; };
+		5F7A36E8150A65A500989D44 /* ATButton.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = ATButton.h; sourceTree = "<group>"; };
+		5F7A36E9150A65A500989D44 /* ATButton.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = ATButton.m; sourceTree = "<group>"; };
+		5F7A36EC150A70B300989D44 /* MAAttachedWindow.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = MAAttachedWindow.h; sourceTree = "<group>"; };
+		5F7A36ED150A70B300989D44 /* MAAttachedWindow.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = MAAttachedWindow.m; sourceTree = "<group>"; };
 		5F7CB7C114E663E600133E77 /* ATNewsCellOne1.xib */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = file.xib; path = ATNewsCellOne1.xib; sourceTree = "<group>"; };
 		5F7CB7C414E7DD8100133E77 /* ATNewsCellOne1.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = ATNewsCellOne1.h; sourceTree = "<group>"; };
 		5F7CB7C514E7DD8100133E77 /* ATNewsCellOne1.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = ATNewsCellOne1.m; sourceTree = "<group>"; };
@@ -226,7 +228,7 @@
 			isa = PBXFrameworksBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
-				5F55128415069352009EE31B /* QTKit.framework in Frameworks */,
+				5F18513E1508DA3D0065D7A9 /* WebKit.framework in Frameworks */,
 				5F2707DD14DAFE6C000A24B4 /* libz.1.2.5.dylib in Frameworks */,
 				03970EFA1315CE4400F15C7E /* Cocoa.framework in Frameworks */,
 			);
@@ -259,7 +261,7 @@
 				03970EFC1315CE4400F15C7E /* AppKit.framework */,
 				03970EFE1315CE4400F15C7E /* Foundation.framework */,
 				03970EF91315CE4400F15C7E /* Cocoa.framework */,
-				5F55128315069352009EE31B /* QTKit.framework */,
+				5F18513D1508DA3D0065D7A9 /* WebKit.framework */,
 			);
 			name = Frameworks;
 			sourceTree = "<group>";
@@ -275,9 +277,11 @@
 				5F7CB7C714E7DD8F00133E77 /* ATNewsCellOne */,
 				5F3401D314DD5EAB00A6A678 /* ATMessageCell */,
 				5F7D1F7114DB44FE00D8C9D5 /* ATAudioCell */,
+				5F7A36EB150A65AA00989D44 /* ATButton */,
 				5F7D1F6914DB209600D8C9D5 /* Const.h */,
 				03970F0B1315CE4400F15C7E /* SampleAppAppDelegate.h */,
 				03970F0C1315CE4400F15C7E /* SampleAppAppDelegate.m */,
+				5F7A36E7150A349D00989D44 /* MAAttachedWindow */,
 				5F2707B714DA8AD7000A24B4 /* TableDataSource */,
 				03970F001315CE4400F15C7E /* Supporting Files */,
 				03970F0E1315CE4400F15C7E /* MainMenu.xib */,
@@ -383,7 +387,6 @@
 				5FE0EED514F57A9200858F77 /* ATNewsCellOne3.xib */,
 				5FE0EED714F5824F00858F77 /* ATNewsCellOne4.xib */,
 				5FE0EED914F5830200858F77 /* ATNewsCellOne5.xib */,
-				5F55127E15069182009EE31B /* ATNewsCellOne5v.xib */,
 				5FE0EEDB14F5837700858F77 /* ATNewsCellOne6.xib */,
 				5FE0EEDD14F5888C00858F77 /* ATNewsCellOne7.xib */,
 				5FE0EF0514F6537600858F77 /* ATNewsCellOne8.xib */,
@@ -412,9 +415,28 @@
 			name = NewsCellTwo;
 			sourceTree = "<group>";
 		};
+		5F7A36E7150A349D00989D44 /* MAAttachedWindow */ = {
+			isa = PBXGroup;
+			children = (
+				5F7A36EC150A70B300989D44 /* MAAttachedWindow.h */,
+				5F7A36ED150A70B300989D44 /* MAAttachedWindow.m */,
+			);
+			name = MAAttachedWindow;
+			sourceTree = "<group>";
+		};
+		5F7A36EB150A65AA00989D44 /* ATButton */ = {
+			isa = PBXGroup;
+			children = (
+				5F7A36E8150A65A500989D44 /* ATButton.h */,
+				5F7A36E9150A65A500989D44 /* ATButton.m */,
+			);
+			name = ATButton;
+			sourceTree = "<group>";
+		};
 		5F7CB7C714E7DD8F00133E77 /* ATNewsCellOne */ = {
 			isa = PBXGroup;
 			children = (
+				5F3F774E14F7BA4B00817383 /* ATNewsCellOne.h */,
 				5F7CB7C414E7DD8100133E77 /* ATNewsCellOne1.h */,
 				5F7CB7C514E7DD8100133E77 /* ATNewsCellOne1.m */,
 				5F3F770D14F6879700817383 /* ATNewsCellOne2.h */,
@@ -425,8 +447,6 @@
 				5F3F771414F6890A00817383 /* ATNewsCellOne4.m */,
 				5F3F771614F68C9700817383 /* ATNewsCellOne5.h */,
 				5F3F771714F68C9800817383 /* ATNewsCellOne5.m */,
-				5F551281150692F4009EE31B /* ATNewsCellOne5v.h */,
-				5F551282150692F4009EE31B /* ATNewsCellOne5v.m */,
 				5F3F771914F68D0F00817383 /* ATNewsCellOne6.h */,
 				5F3F771A14F68D0F00817383 /* ATNewsCellOne6.m */,
 				5F3F771C14F68E2800817383 /* ATNewsCellOne7.h */,
@@ -439,7 +459,6 @@
 				5F3F772614F692A700817383 /* ATNewsCellOne10.m */,
 				5F3F772814F692EC00817383 /* ATNewsCellOne11.h */,
 				5F3F772914F692ED00817383 /* ATNewsCellOne11.m */,
-				5F3F774E14F7BA4B00817383 /* ATNewsCellOne.h */,
 			);
 			name = ATNewsCellOne;
 			sourceTree = "<group>";
@@ -589,7 +608,6 @@
 				5F3F770A14F684E100817383 /* ATNewsCellTwo9.xib in Resources */,
 				5F3F770B14F684E100817383 /* ATNewsCellTwo10.xib in Resources */,
 				5F3F770C14F684E100817383 /* ATNewsCellTwo11.xib in Resources */,
-				5F55127F15069182009EE31B /* ATNewsCellOne5v.xib in Resources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -636,6 +654,8 @@
 				5FDC0FAC14FE59FC0003F47C /* INAppStoreWindow.m in Sources */,
 				5FF1A1B915056A2500CDEA3C /* AudioDataSource.m in Sources */,
 				5F4F1A941507ED9800A2F84B /* MainTable.m in Sources */,
+				5F7A36EA150A65A500989D44 /* ATButton.m in Sources */,
+				5F7A36EE150A70B300989D44 /* MAAttachedWindow.m in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};

@@ -8,7 +8,6 @@
 
 #import "TableDataSource.h"
 
-
 @implementation TableDataSource
 @synthesize tableSet;
 @synthesize choice;
@@ -185,6 +184,8 @@
 						cell.pic.image = [userRecords objectForKey:USERPIC];
 					}
 					// Video
+					//[[cell.movie mainFrame] loadHTMLString:[userRecords objectForKey:VIDEO] baseURL:nil];
+					//[[cell.movie mainFrame] loadRequest:[NSURLRequest requestWithURL:[NSURL URLWithString:[userRecords objectForKey:VIDEO]]]];
 					pic = [userRecords objectForKey:ATTACHMENTSPHOTO];
 					if (pic) {
 						cell.attachments.image = [userRecords objectForKey:ATTACHMENTSPHOTO];
@@ -211,10 +212,13 @@
 						cell.pic.image = [userRecords objectForKey:USERPIC];
 					}
 					// Video
+					//[[cell.movie mainFrame] loadHTMLString:[userRecords objectForKey:VIDEO] baseURL:nil];
+					//[[cell.movie mainFrame] loadRequest:[NSURLRequest requestWithURL:[NSURL URLWithString:[userRecords objectForKey:VIDEO]]]];
 					pic = [userRecords objectForKey:ATTACHMENTSPHOTO];
 					if (pic) {
 						cell.attachments.image = [userRecords objectForKey:ATTACHMENTSPHOTO];
 					}
+
 					result = cell;
 					break;
 				}
@@ -347,10 +351,14 @@
 					if (pic) {
 						cell.pic.image = [userRecords objectForKey:USERPIC];
 					}
+					// Video
+					//[[cell.movie mainFrame] loadHTMLString:[userRecords objectForKey:VIDEO] baseURL:nil];
+					//[[cell.movie mainFrame] loadRequest:[NSURLRequest requestWithURL:[NSURL URLWithString:[userRecords objectForKey:VIDEO]]]];
 					pic = [userRecords objectForKey:ATTACHMENTSPHOTO];
 					if (pic) {
 						cell.attachments.image = [userRecords objectForKey:ATTACHMENTSPHOTO];
 					}
+
 					NSMutableArray *audioArray = [userRecords objectForKey:AUDIO];
 					AudioDataSource *table = (id)cell.wall.dataSource;
 					[table setTableSet:audioArray];
@@ -377,10 +385,14 @@
 					if (pic) {
 						cell.pic.image = [userRecords objectForKey:USERPIC];
 					}
+					// Video
+					//[[cell.movie mainFrame] loadHTMLString:[userRecords objectForKey:VIDEO] baseURL:nil];
+					//[[cell.movie mainFrame] loadRequest:[NSURLRequest requestWithURL:[NSURL URLWithString:[userRecords objectForKey:VIDEO]]]];
 					pic = [userRecords objectForKey:ATTACHMENTSPHOTO];
 					if (pic) {
 						cell.attachments.image = [userRecords objectForKey:ATTACHMENTSPHOTO];
 					}
+
 					NSMutableArray *audioArray = [userRecords objectForKey:AUDIO];
 					AudioDataSource *table = (id)cell.wall.dataSource;
 					[table setTableSet:audioArray];
@@ -520,10 +532,14 @@
 						cell.pic.image = [userRecords objectForKey:USERPIC];
 					}
 					// Video
+					//[[cell.movie mainFrame] loadHTMLString:[userRecords objectForKey:VIDEO] baseURL:nil];
+					//[[cell.movie mainFrame] loadRequest:[NSURLRequest requestWithURL:[NSURL URLWithString:[userRecords objectForKey:VIDEO]]]];
 					pic = [userRecords objectForKey:ATTACHMENTSPHOTO];
 					if (pic) {
 						cell.attachments.image = [userRecords objectForKey:ATTACHMENTSPHOTO];
 					}
+
+					//cell.movie.frame = NSMakeRect(cell.movie.frame.origin.x, cell.movie.frame.origin.y, 200.0, 200.0);
 					result = cell;
 					break;
 				}
@@ -556,10 +572,13 @@
 						cell.pic.image = [userRecords objectForKey:USERPIC];
 					}
 					// Video
+					//[[cell.movie mainFrame] loadHTMLString:[userRecords objectForKey:VIDEO] baseURL:nil];
+					//[[cell.movie mainFrame] loadRequest:[NSURLRequest requestWithURL:[NSURL URLWithString:[userRecords objectForKey:VIDEO]]]];
 					pic = [userRecords objectForKey:ATTACHMENTSPHOTO];
 					if (pic) {
 						cell.attachments.image = [userRecords objectForKey:ATTACHMENTSPHOTO];
 					}
+					
 					result = cell;
 					break;
 				}
@@ -742,6 +761,9 @@
 					if (pic) {
 						cell.pic.image = [userRecords objectForKey:USERPIC];
 					}
+					// Video
+					//[[cell.movie mainFrame] loadHTMLString:[userRecords objectForKey:VIDEO] baseURL:nil];
+					//[[cell.movie mainFrame] loadRequest:[NSURLRequest requestWithURL:[NSURL URLWithString:[userRecords objectForKey:VIDEO]]]];
 					pic = [userRecords objectForKey:ATTACHMENTSPHOTO];
 					if (pic) {
 						cell.attachments.image = [userRecords objectForKey:ATTACHMENTSPHOTO];
@@ -782,6 +804,9 @@
 					if (pic) {
 						cell.pic.image = [userRecords objectForKey:USERPIC];
 					}
+					// Video
+					//[[cell.movie mainFrame] loadHTMLString:[userRecords objectForKey:VIDEO] baseURL:nil];
+					//[[cell.movie mainFrame] loadRequest:[NSURLRequest requestWithURL:[NSURL URLWithString:[userRecords objectForKey:VIDEO]]]];
 					pic = [userRecords objectForKey:ATTACHMENTSPHOTO];
 					if (pic) {
 						cell.attachments.image = [userRecords objectForKey:ATTACHMENTSPHOTO];
@@ -827,7 +852,7 @@
     //return [[tableSet objectAtIndex:row] objectForKey:[tableColumn identifier]]; 
 }
 
-- (NSUInteger)numberOfRowsInTableView:(NSTableView *)tableView
+- (NSInteger)numberOfRowsInTableView:(NSTableView *)tableView
 {
     return [tableSet count];
 }

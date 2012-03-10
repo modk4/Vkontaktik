@@ -14,7 +14,7 @@
 #define ARTIST @"artist"
 #define TITLE @"title"
 #define AUDIO @"audioArray"
-#define URL @"url"
+#define URLALL @"url"
 #define DURATION @"duration"
 #define ONLINE @"online"
 //#define TIMEMESSAGE @"time"
@@ -25,6 +25,7 @@
 #define GROUPPIC @"groupPic"
 #define GROUPNAME @"groupName"
 #define ATTACHMENTSPHOTO @"attachmentsPhoto"
+#define VIDEO @"video"
 
 typedef enum {kFriends, kWall, kAudio, kMessages, kNews} TypeTable;
 
@@ -53,7 +54,9 @@ enum TypeNewsFlags {
     kNewsTypeG7			= 1 << 17,// Группа + Аудио
 	
 	kNewsTypeG8			= 1 << 18,// Группа + Текст + картинка + аудио
+	// Группа + Текст + картинка + видео
 	kNewsTypeG9			= 1 << 19,// Группа + Картинка + аудио
+	// Группа + Картинка + видео
 	kNewsTypeG10		= 1 << 20,// Группа + Текст + видео + аудио
 	kNewsTypeG11		= 1 << 21,// Группа + Видео + аудио
 	

@@ -24,182 +24,52 @@ static NSImage *icon1, *icon2, *icon3, *icon4, *icon5, *icon11, *icon21, *icon31
 @synthesize userPic;
 @synthesize friendsArray, newsArray, messageArray, wallArray, audioArray;
 @synthesize updateTimer;
+@synthesize videoWebView, openVideo;//videoView,
 
 - (void)initApp
 {
-	// TO DO Возможно кэшировать все записи в массиве, перед очисткой
-	
-	// Получим записи со стены // [NSDictionary dictionaryWithObject:[NSNumber numberWithBool:YES] forKey:@"extended"]
-	EBVKAPIRequest *request = [[EBVKAPIRequest alloc] initWithMethodName: @"wall.get" 
-                                                              parameters: [NSDictionary dictionaryWithObject:@"1" forKey:@"extended"]	 
-                                                          responseFormat: EBJSONFormat];
-	EBVKAPIResponse *response = [[EBVKAPIResponse alloc] init];
-
-    response = [request sendRequestWithToken: token];
-    if (response) {
-        if (response.response) {
-            if ([response.response objectForKey:@"response"]) {
-				//NSLog(@"[SECOND] response: %@ (User News)\n", [response.response objectForKey:@"response"]);
-				
-				// Заполняем массив для таблицы
-				NSDictionary *responseArray = [response.response objectForKey:@"response"];
-				//NSArray *groups = [responseArray objectForKey:@"groups"];
-				NSArray *items = [responseArray objectForKey:@"wall"];
-				//NSArray *profiles = [responseArray objectForKey:@"profiles"];
-				
-				// Тупо берем количество записей в постах, потом их все-равно надо всех обрабатывать
-				[wallCount setStringValue:[NSString stringWithFormat:@"%d", [items count]]];
-				
-            } else {
-                NSLog(@"[SECOND]: API server error : %@",
-                      [response.response objectForKey: @"error"]);
-				//return;
-            }
-        } else {
-            NSLog(@"[SECOND] internal EBVKAPI error :%@\n", [response.error localizedDescription]);
-			//return;
-        }
-    } else {
-		NSLog(@"Unable to get news.");
-		//return;
-		// Предупредить пользователя TO DO
-	}
-	
-	[request setMethodName: @"friends.get"];
-	[request setParameters: nil];
-	
-    response = [request sendRequestWithToken: token];
-    if (response) {
-        if (response.response) {
-            if ([response.response objectForKey:@"response"]) {
-                //NSLog(@"[SECOND] response: %@ (User Friends)\n", [response.response objectForKey:@"response"]);
-				// Заполняем массив для таблицы
-				NSArray *responseArray = [response.response objectForKey:@"response"];
-				[friendsCount setStringValue:[NSString stringWithFormat:@"%d", [responseArray count]]];
-            } else {
-                NSLog(@"[SECOND]: API server error : %@",
-                      [response.response objectForKey: @"error"]);
-            }
-        } else {
-            NSLog(@"[SECOND] internal EBVKAPI error :%@\n", [response.error localizedDescription]);
-        }
-    } else {
-		NSLog(@"Unable to get friends.");
-		//[NSApp terminate:nil];
-	}
-	
+	NSLog(@"Init start...");
+	[self performSelectorOnMainThread:@selector(updateIndicator:) withObject:[NSNumber numberWithFloat:5.0f] waitUntilDone:YES modes:[NSArray arrayWithObject:NSRunLoopCommonModes]];
+	if (!audioArray) [self openAudio];
+	NSLog(@"Init Audio");
 	[NSThread sleepForTimeInterval:1.0f];
-	
-	// Получим свое фото
-	[request setMethodName: @"getUserInfoEx"];
-    response = [request sendRequestWithToken: token];
-    if (response) {
-        if (response.response) {
-            if ([response.response objectForKey:@"response"]) {
-                //NSLog(@"[SECOND] response: %@ (UserPic)\n", [[response.response objectForKey:@"response"] objectForKey: @"user_photo"]);
-				//
-				NSImage *user = [[NSImage alloc] initWithContentsOfURL:[NSURL URLWithString:[[response.response objectForKey:@"response"] objectForKey: @"user_photo"]]];
-				[userPic setImage:user];
-				[user release];
-            } else {
-				// Предупредить, что нет разрешения для приложения
-				// TODO
-                NSLog(@"[SECOND]: API server error : %@",
-                      [response.response objectForKey: @"error"]);
-            }
-        } else {
-            NSLog(@"[SECOND] internal EBVKAPI error :%@\n", [response.error localizedDescription]);
-        }
-    } else {
-		NSLog(@"Unable to get user photo.");
-		//[NSApp terminate:nil];
-	}
-	
-	[request setMethodName: @"audio.get"];
-    response = [request sendRequestWithToken: token];
-    if (response) {
-        if (response.response) {
-            if ([response.response objectForKey:@"response"]) {
-                //NSLog(@"[SECOND] response: %@ (User Friends)\n", [response.response objectForKey:@"response"]);
-				NSArray *responseArray = [response.response objectForKey:@"response"];
-				[audioCount setStringValue:[NSString stringWithFormat:@"%d", [responseArray count]]];
-            } else {
-                NSLog(@"[SECOND]: API server error : %@",
-                      [response.response objectForKey: @"error"]);
-            }
-        } else {
-            NSLog(@"[SECOND] internal EBVKAPI error :%@\n", [response.error localizedDescription]);
-        }
-    } else {
-		NSLog(@"Unable to get audio.");
-		// Предупредить пользователя TO DO
-	}
-	
-	[request setMethodName: @"messages.get"];
-    response = [request sendRequestWithToken: token];
-    if (response) {
-        if (response.response) {
-            if ([response.response objectForKey:@"response"]) {
-                //NSLog(@"[SECOND] response: %@ (User Friends)\n", [response.response objectForKey:@"response"]);
-				NSArray *responseArray = [response.response objectForKey:@"response"];
-				[messageCount setStringValue:[NSString stringWithFormat:@"%d", [responseArray count] - 1]];
-            } else {
-                NSLog(@"[SECOND]: API server error : %@",
-                      [response.response objectForKey: @"error"]);
-            }
-        } else {
-            NSLog(@"[SECOND] internal EBVKAPI error :%@\n", [response.error localizedDescription]);
-        }
-    } else {
-		NSLog(@"Unable to get message.");
-		// Предупредить пользователя TO DO
-	}
-	
+	[self performSelectorOnMainThread:@selector(updateIndicator:) withObject:[NSNumber numberWithFloat:25.0f] waitUntilDone:YES modes:[NSArray arrayWithObject:NSRunLoopCommonModes]];
+	if (!messageArray) [self openMessage];
+	NSLog(@"Init Message");
 	[NSThread sleepForTimeInterval:1.0f];
-	
-	// Получим новости
-	[request setMethodName: @"newsfeed.get"];
-    response = [request sendRequestWithToken: token];
-    if (response) {
-        if (response.response) {
-            if ([response.response objectForKey:@"response"]) {
-				//NSLog(@"[SECOND] response: %@ (User News)\n", [response.response objectForKey:@"response"]);
-				
-				// Заполняем массив для таблицы
-				NSDictionary *responseArray = [response.response objectForKey:@"response"];
-				//NSArray *groups = [responseArray objectForKey:@"groups"];
-				NSArray *items = [responseArray objectForKey:@"items"];
-				//NSArray *profiles = [responseArray objectForKey:@"profiles"];
-				
-				// Тупо берем количество записей в постах, потом их все-равно надо всех обрабатывать
-				[newsCount setStringValue:[NSString stringWithFormat:@"%d", [items count]]];
-
-            } else {
-                NSLog(@"[SECOND]: API server error : %@",
-                      [response.response objectForKey: @"error"]);
-				//return;
-            }
-        } else {
-            NSLog(@"[SECOND] internal EBVKAPI error :%@\n", [response.error localizedDescription]);
-			//return;
-        }
-    } else {
-		NSLog(@"Unable to get news.");
-		//return;
-		// Предупредить пользователя TO DO
-	}
-	
+	[self performSelectorOnMainThread:@selector(updateIndicator:) withObject:[NSNumber numberWithFloat:50.0f] waitUntilDone:YES modes:[NSArray arrayWithObject:NSRunLoopCommonModes]];
+	if (!wallArray) [self openWall];
+	NSLog(@"Init Wall");
+	[NSThread sleepForTimeInterval:1.0f];
+	[self performSelectorOnMainThread:@selector(updateIndicator:) withObject:[NSNumber numberWithFloat:75.0f] waitUntilDone:YES modes:[NSArray arrayWithObject:NSRunLoopCommonModes]];
+	if (!friendsArray) [self openFriends];
+	NSLog(@"Init Friends");
+	[NSThread sleepForTimeInterval:1.0f];
+	[self performSelectorOnMainThread:@selector(updateIndicator:) withObject:[NSNumber numberWithFloat:100.0f] waitUntilDone:YES modes:[NSArray arrayWithObject:NSRunLoopCommonModes]];
+	if (!newsArray) [self openNews];
+	NSLog(@"Init News");
+	[NSThread sleepForTimeInterval:1.0f];
+	[self performSelectorOnMainThread:@selector(updateIndicator:) withObject:[NSNumber numberWithFloat:125.0f] waitUntilDone:YES modes:[NSArray arrayWithObject:NSRunLoopCommonModes]];
+	NSLog(@"Init User Ext.");
+	[self userExt];
+	[self performSelectorOnMainThread:@selector(updateIndicator:) withObject:[NSNumber numberWithFloat:140.0f] waitUntilDone:YES modes:[NSArray arrayWithObject:NSRunLoopCommonModes]];
 	[self performClick4:self];
 	
-	[_delayVk stopAnimation:self];
+	//[_delayVk stopAnimation:self];
 	[_spinPanel orderOut:nil];
 	[_window center];
 	[_window orderFront:nil];
 }
 
+- (void)updateIndicator:(NSNumber *)level
+{
+	[_delayVk setDoubleValue:[level floatValue]];
+	//[_delayVk setNeedsDisplay:YES];
+}
+
 -(void) observeValueForKeyPath:(NSString *)keyPath ofObject:(id)object change:(NSDictionary *)change context:(void *)context {
-    int row = [[_wall selectedCellRowIndex] intValue];
-    int col = [[_wall selectedCellColumnIndex] intValue];
+    //int row = [[_wall selectedCellRowIndex] intValue];
+    //int col = [[_wall selectedCellColumnIndex] intValue];
     //NSLog(@"Selected Row: %d Selected Column: %d", row, col);
 }
 
@@ -233,7 +103,9 @@ static NSImage *icon1, *icon2, *icon3, *icon4, *icon5, *icon11, *icon21, *icon31
     icon51 = [[NSImage alloc] initByReferencingFile:path];
 	
 	sound = nil;
-	currentSoundRow = -1;
+	//currentSoundRow = -1;
+	currentPlay = nil;
+	currentSender = nil;
 	
 	friendsArray = newsArray = messageArray = wallArray = audioArray = nil;
 	
@@ -241,7 +113,7 @@ static NSImage *icon1, *icon2, *icon3, *icon4, *icon5, *icon11, *icon21, *icon31
 	// Поставить таймаут, если запросы к вконтакте слишком долгие
 	NSError *error = nil;
     
-    int settings = EBSettingsStatusAccess | EBSettingsAllowNotifications | EBSettingsWallAccess | EBSettingsMessagesAccess;
+    int settings = EBSettingsStatusAccess | EBSettingsAllowNotifications | EBSettingsWallAccess | EBSettingsMessagesAccess | EBSettingsVideosAccess;
     token = [[EBVKAPIToken alloc] initWithEmail: USER_EMAIL 
                                                      password: USER_PASSWORD 
                                                 applicationID: APP_ID 
@@ -250,6 +122,14 @@ static NSImage *icon1, *icon2, *icon3, *icon4, *icon5, *icon11, *icon21, *icon31
     if (!token) {
         NSLog(@"Unable to log on. Reason:");
         NSLog(@"%@", [error localizedDescription]);
+		NSAlert *alert = [[NSAlert alloc] init];
+		[alert setAlertStyle:NSCriticalAlertStyle];
+		[alert setMessageText:@"Unable to log on."];
+		[alert setInformativeText:[error localizedDescription]];
+		[alert addButtonWithTitle:@"OK"];
+		
+		[alert runModal];
+		[alert release];
 		[NSApp terminate:nil];
     }
 	
@@ -264,12 +144,46 @@ static NSImage *icon1, *icon2, *icon3, *icon4, *icon5, *icon11, *icon21, *icon31
 	[[NSApplication sharedApplication] activateIgnoringOtherApps:TRUE];
 	
 	[_spinPanel orderFront:nil];
-	[_delayVk startAnimation:nil];
+	//[_delayVk startAnimation:nil];
 	
 	NSInteger interval = 300;
 	self.updateTimer = [[NSTimer scheduledTimerWithTimeInterval:interval
 														 target:self selector:@selector(updateVk:)
 													   userInfo:nil repeats:YES] retain];
+}
+
+- (void)userExt
+{
+	EBVKAPIRequest *request = [[EBVKAPIRequest alloc] initWithMethodName: @"getUserInfoEx" 
+                                                              parameters: nil	 
+                                                          responseFormat: EBJSONFormat];
+	EBVKAPIResponse *response = [[EBVKAPIResponse alloc] init];
+	
+	// Получим свое фото
+    response = [request sendRequestWithToken: token];
+    if (response) {
+        if (response.response) {
+            if ([response.response objectForKey:@"response"]) {
+                //NSLog(@"[SECOND] response: %@ (UserPic)\n", [[response.response objectForKey:@"response"] objectForKey: @"user_photo"]);
+				//
+				NSImage *user = [[NSImage alloc] initWithContentsOfURL:[NSURL URLWithString:[[response.response objectForKey:@"response"] objectForKey: @"user_photo"]]];
+				if (user) {
+					[userPic setImage:user];
+				}
+				[user release];
+            } else {
+				// Предупредить, что нет разрешения для приложения
+				// TODO
+                NSLog(@"[SECOND]: API server error : %@",
+                      [response.response objectForKey: @"error"]);
+            }
+        } else {
+            NSLog(@"[SECOND] internal EBVKAPI error :%@\n", [response.error localizedDescription]);
+        }
+    } else {
+		NSLog(@"Unable to get user photo.");
+		//[NSApp terminate:nil];
+	}
 }
 
 - (void)applicationDidBecomeActive:(NSNotification *)aNotification
@@ -328,7 +242,9 @@ static NSImage *icon1, *icon2, *icon3, *icon4, *icon5, *icon11, *icon21, *icon31
 					[newUserRecord setObject:userName forKey:USERNAME];
 					NSImage *user = [[NSImage alloc] initWithContentsOfURL:[NSURL URLWithString:[userDic objectForKey:@"photo"]]];
 					[newUserRecord setObject:[userDic objectForKey:@"online"] forKey:ONLINE];
-					[newUserRecord setObject:user forKey:USERPIC];
+					if (user) {
+						[newUserRecord setObject:user forKey:USERPIC];
+					}
 					[friendsArrayTemp addObject:newUserRecord];
 					[user release];
 				}
@@ -474,6 +390,11 @@ static NSImage *icon1, *icon2, *icon3, *icon4, *icon5, *icon11, *icon21, *icon31
 					NSMutableDictionary *newUserRecord = [NSMutableDictionary dictionaryWithCapacity:7];
 					
 					NSString *message = [userDic objectForKey:@"body"];
+					if ([message length] > 3) {
+						message = [self flattenHTML:[userDic objectForKey:@"body"]];
+					}
+
+					message = [userDic objectForKey:@"body"];
 					NSString *title = [userDic objectForKey:@"title"];
 					NSNumber *uid = [userDic objectForKey:@"uid"];
 					
@@ -587,7 +508,7 @@ static NSImage *icon1, *icon2, *icon3, *icon4, *icon5, *icon11, *icon21, *icon31
 					NSMutableDictionary *newUserRecord = [NSMutableDictionary dictionaryWithCapacity:4];
 					NSString *artist = [userDic objectForKey:ARTIST];
 					NSString *title = [[userDic objectForKey:TITLE] stringByReplacingOccurrencesOfString:@"&quot;" withString:@"\""];
-					NSString *url = [userDic objectForKey:URL];
+					NSString *url = [userDic objectForKey:URLALL];
 					//NSLog(@"%@", [[userDic objectForKey:@"duration"] class]);
 					double progress = [[userDic objectForKey:@"duration"] doubleValue];
 					int minutes = floor(progress/60);
@@ -600,7 +521,7 @@ static NSImage *icon1, *icon2, *icon3, *icon4, *icon5, *icon11, *icon21, *icon31
 					[newUserRecord setObject:duration forKey:DURATION];
 					[newUserRecord setObject:artist forKey:ARTIST];
 					[newUserRecord setObject:title forKey:TITLE];
-					[newUserRecord setObject:url forKey:URL];
+					[newUserRecord setObject:url forKey:URLALL];
 					[audioArrayTemp addObject:newUserRecord];
 				}
             } else {
@@ -668,6 +589,9 @@ static NSImage *icon1, *icon2, *icon3, *icon4, *icon5, *icon11, *icon21, *icon31
 	}
 	//NSLog(@"Parametrs: %@", parametrsUid);
 	
+	// Поставим задержку, зачастую не отдает, именно эти записи
+	[NSThread sleepForTimeInterval:1.0f];
+	
 	EBVKAPIRequest *request = [[EBVKAPIRequest alloc] initWithMethodName: @"audio.getById" //parametrsUid forKey:@"aids"
                                                               parameters: [NSDictionary dictionaryWithObject:parametrsUid forKey:@"audios"]	 
                                                           responseFormat: EBJSONFormat];
@@ -686,8 +610,8 @@ static NSImage *icon1, *icon2, *icon3, *icon4, *icon5, *icon11, *icon21, *icon31
 					NSDictionary *userDic = [responseArray objectAtIndex:i];
 					NSMutableDictionary *newUserRecord = [NSMutableDictionary dictionaryWithCapacity:4];
 					NSString *artist = [userDic objectForKey:ARTIST];
-					NSString *title = [[userDic objectForKey:TITLE] stringByReplacingOccurrencesOfString:@"&quot;" withString:@"\""];
-					NSString *url = [userDic objectForKey:URL];
+					NSString *title = [self flattenHTML:[userDic objectForKey:TITLE]];
+					NSString *url = [userDic objectForKey:URLALL];
 					double progress = [[userDic objectForKey:@"duration"] doubleValue];
 					int minutes = floor(progress/60);
 					int seconds = trunc(progress - minutes * 60);
@@ -698,8 +622,77 @@ static NSImage *icon1, *icon2, *icon3, *icon4, *icon5, *icon11, *icon21, *icon31
 					[newUserRecord setObject:duration forKey:DURATION];
 					[newUserRecord setObject:artist forKey:ARTIST];
 					[newUserRecord setObject:title forKey:TITLE];
-					[newUserRecord setObject:url forKey:URL];
+					[newUserRecord setObject:url forKey:URLALL];
 					[audio addObject:newUserRecord];
+				}
+            } else {
+                NSLog(@"[SECOND]: API server error : %@",
+                      [response.response objectForKey: @"error"]);
+            }
+        } else {
+            NSLog(@"[SECOND] internal EBVKAPI error :%@\n", [response.error localizedDescription]);
+        }
+    } else {
+		NSLog(@"Unable to get audio.");
+		//[NSApp terminate:nil];
+	}
+	
+	if (audio) {
+		[audio retain];
+		[audio release];
+	}
+	return audio;
+}
+
+- (NSMutableArray *)getVideo:(NSArray *)aid
+{
+	NSMutableArray *audio = nil;
+	if (![aid count]) {
+		return audio;
+	}
+	
+	NSString *parametrsUid = nil;
+	for (int i = 0; i < [aid count]; i++) {
+		NSDictionary *item = [aid objectAtIndex:i];
+		if (parametrsUid) {
+			parametrsUid = [NSString stringWithFormat:@"%@,%@_%@", parametrsUid, [[item objectForKey:@"id"] stringValue], [[item objectForKey:@"aid"] stringValue]];
+		} else {
+			parametrsUid = [NSString stringWithFormat:@"%@_%@", [[item objectForKey:@"id"] stringValue], [[item objectForKey:@"aid"] stringValue]];
+		}
+	}
+	//NSLog(@"Parametrs: %@", parametrsUid);
+	
+	EBVKAPIRequest *request = [[EBVKAPIRequest alloc] initWithMethodName: @"video.get" //width parametrsUid forKey:@"videos"
+                                                              parameters: [NSDictionary dictionaryWithObject:parametrsUid forKey:@"videos"]	 
+                                                          responseFormat: EBJSONFormat];
+	EBVKAPIResponse *response = [[EBVKAPIResponse alloc] init];
+    response = [request sendRequestWithToken: token];
+    if (response) {
+        if (response.response) {
+            if ([response.response objectForKey:@"response"]) {
+				//NSLog(@"[SECOND] response: %@ (User Friends)\n", [response.response objectForKey:@"response"]);
+				// Заполняем массив для таблицы
+				NSArray *responseArray = [response.response objectForKey:@"response"];
+				//NSLog(@"%@", responseArray);
+				if ([responseArray count] > 0) {
+					audio = [[NSMutableArray alloc] init];
+				}
+				for (int i = 1; i < [responseArray count]; i++) {
+					NSDictionary *userDic = [responseArray objectAtIndex:i];
+					//NSLog(@"%@", userDic);
+					//NSString *url = [NSString stringWithFormat:@"<iframe src=\"%@\" width=\"607\" height=\"360\" frameborder=\"0\"></iframe>", [userDic objectForKey:@"player"]];
+					//<div style=\"margin-top: 0cm;\"><span class="Apple-style-span" style="font-family: 'Helvetica Neue', Arial, Helvetica, sans-serif;"><iframe allowfullscreen=\"\" frameborder=\"0\" height="280" src=\"%@\" width=\"280\"></iframe></span></div>
+					//height=\"280\"  width=\"280\"
+					NSString *url = [NSString stringWithFormat:@"<iframe allowfullscreen=\"yes\" frameborder=\"0\" width=\"562\" height=\"378\" src=\"%@\"></iframe>", [userDic objectForKey:@"player"]];
+					//<embed src=\"%@\" width=\"320\" height=\"250\" </embed>
+					//[newUserRecord setObject:url forKey:URL];
+					if (url) {
+						[audio addObject:url];
+					}
+				}
+				if (![audio count]) {
+					[audio release];
+					audio = nil;
 				}
             } else {
                 NSLog(@"[SECOND]: API server error : %@",
@@ -811,6 +804,26 @@ static NSImage *icon1, *icon2, *icon3, *icon4, *icon5, *icon11, *icon21, *icon31
 						}
 					}
 					
+					// Надо проверить есть ли в массиве видео, если сначала картинка, то видео будет в массиве
+					BOOL isVideo = FALSE;
+					NSArray *attachmentsV = [post objectForKey:@"attachments"];
+					NSMutableArray *videoDic = [NSMutableArray array];
+					if (attachmentsV) {
+						for (int i = 0; i < [attachmentsV count]; i++) {
+							NSDictionary *video = [attachmentsV objectAtIndex:i];
+							if ([[video objectForKey:@"type"] isEqual:@"video"]) {
+								isVideo = TRUE;
+								NSDictionary *videoRec = [video objectForKey:@"video"];
+								//NSLog(@"Audio Rec: %@", audioRec);
+								//NSLog(@"Audio AID class: %@", [[audioRec objectForKey:@"aid"] class]);
+								NSNumber *aid = [videoRec objectForKey:@"vid"];
+								NSNumber *uid = [videoRec objectForKey:@"owner_id"];
+								NSDictionary *newRec = [NSDictionary dictionaryWithObjectsAndKeys:aid, @"aid", uid, @"id", nil];
+								[videoDic addObject:newRec];
+							}
+						}
+					}
+					
 					//NSLog(@"Attach: %@", attachment);
 					
 					/******************/
@@ -883,7 +896,14 @@ static NSImage *icon1, *icon2, *icon3, *icon4, *icon5, *icon11, *icon21, *icon31
 								} else {
 									photoLink = [attachment objectForKey:@"video"];
 									if (photoLink) {
-										// Фотография
+										// Другой тип, видео
+										NSArray *videoRecords = [self getVideo:videoDic];
+										if (videoRecords) {
+											[newUserRecord setObject:[videoRecords objectAtIndex:0] forKey:VIDEO];
+											[videoRecords release];
+											//[newUserRecord setObject:[NSNumber numberWithUnsignedInt:kNewsTypeG4] forKey:@"newsType"];
+										}
+										// Фотография для замены видео, оно будет открываться в отдельном окне
 										NSImage *atPic = [[NSImage alloc] initWithContentsOfURL:[NSURL URLWithString:[photoLink objectForKey:@"image_big"]]];
 										[newUserRecord setObject:atPic forKey:ATTACHMENTSPHOTO];
 										[atPic release];
@@ -1001,7 +1021,9 @@ static NSImage *icon1, *icon2, *icon3, *icon4, *icon5, *icon11, *icon21, *icon31
 								if (photoLink) {
 									// Фотография
 									NSImage *atPic = [[NSImage alloc] initWithContentsOfURL:[NSURL URLWithString:[photoLink objectForKey:@"src_big"]]];
-									[newUserRecord setObject:atPic forKey:ATTACHMENTSPHOTO];
+									if (atPic) {
+										[newUserRecord setObject:atPic forKey:ATTACHMENTSPHOTO];
+									}
 									[atPic release];
 									
 									// ************
@@ -1018,7 +1040,14 @@ static NSImage *icon1, *icon2, *icon3, *icon4, *icon5, *icon11, *icon21, *icon31
 								} else {
 									photoLink = [attachment objectForKey:@"video"];
 									if (photoLink) {
-										// Фотография
+										// Другой тип, видео
+										NSArray *videoRecords = [self getVideo:videoDic];
+										if (videoRecords) {
+											[newUserRecord setObject:[videoRecords objectAtIndex:0] forKey:VIDEO];
+											[videoRecords release];
+											//[newUserRecord setObject:[NSNumber numberWithUnsignedInt:kNewsTypeG4] forKey:@"newsType"];
+										}
+										// Фотография для замены видео, оно будет открываться в отдельном окне
 										NSImage *atPic = [[NSImage alloc] initWithContentsOfURL:[NSURL URLWithString:[photoLink objectForKey:@"image_big"]]];
 										[newUserRecord setObject:atPic forKey:ATTACHMENTSPHOTO];
 										[atPic release];
@@ -1142,7 +1171,14 @@ static NSImage *icon1, *icon2, *icon3, *icon4, *icon5, *icon11, *icon21, *icon31
 								} else {
 									photoLink = [attachment objectForKey:@"video"];
 									if (photoLink) {
-										// Фотография
+										// Другой тип, видео
+										NSArray *videoRecords = [self getVideo:videoDic];
+										if (videoRecords) {
+											[newUserRecord setObject:[videoRecords objectAtIndex:0] forKey:VIDEO];
+											[videoRecords release];
+											//[newUserRecord setObject:[NSNumber numberWithUnsignedInt:kNewsTypeG4] forKey:@"newsType"];
+										}
+										// Фотография для замены видео, оно будет открываться в отдельном окне
 										NSImage *atPic = [[NSImage alloc] initWithContentsOfURL:[NSURL URLWithString:[photoLink objectForKey:@"image_big"]]];
 										[newUserRecord setObject:atPic forKey:ATTACHMENTSPHOTO];
 										[atPic release];
@@ -1248,7 +1284,14 @@ static NSImage *icon1, *icon2, *icon3, *icon4, *icon5, *icon11, *icon21, *icon31
 								} else {
 									photoLink = [attachment objectForKey:@"video"];
 									if (photoLink) {
-										// Фотография
+										// Другой тип, видео
+										NSArray *videoRecords = [self getVideo:videoDic];
+										if (videoRecords) {
+											[newUserRecord setObject:[videoRecords objectAtIndex:0] forKey:VIDEO];
+											[videoRecords release];
+											//[newUserRecord setObject:[NSNumber numberWithUnsignedInt:kNewsTypeG4] forKey:@"newsType"];
+										}
+										// Фотография для замены видео, оно будет открываться в отдельном окне
 										NSImage *atPic = [[NSImage alloc] initWithContentsOfURL:[NSURL URLWithString:[photoLink objectForKey:@"image_big"]]];
 										[newUserRecord setObject:atPic forKey:ATTACHMENTSPHOTO];
 										[atPic release];
@@ -1374,7 +1417,7 @@ static NSImage *icon1, *icon2, *icon3, *icon4, *icon5, *icon11, *icon21, *icon31
 				//unsigned int flag;
 				for (int i = 1; i < [items count]; i++) {
 					NSDictionary *post = [items objectAtIndex:i];
-					NSLog(@"Post: %@", post);
+					//NSLog(@"Post: %@", post);
 					// Ищем автора
 					NSNumber *authorId = [post objectForKey:@"from_id"];
 					if (!authorId || [authorId longLongValue] < 0) {
@@ -1418,6 +1461,7 @@ static NSImage *icon1, *icon2, *icon3, *icon4, *icon5, *icon11, *icon21, *icon31
 					BOOL isAttachments = FALSE;
 					NSDictionary *attachment = [post objectForKey:@"attachment"];
 					if (attachment && ([attachment objectForKey:@"photo"] || [attachment objectForKey:@"video"] || [attachment objectForKey:@"audio"])) isAttachments = TRUE;
+					
 					// Надо проверить есть ли в массиве аудио
 					BOOL isAudio = FALSE;
 					NSArray *attachments = [post objectForKey:@"attachments"];
@@ -1434,6 +1478,26 @@ static NSImage *icon1, *icon2, *icon3, *icon4, *icon5, *icon11, *icon21, *icon31
 								NSNumber *uid = [audioRec objectForKey:@"owner_id"];
 								NSDictionary *newRec = [NSDictionary dictionaryWithObjectsAndKeys:aid, @"aid", uid, @"id", nil];
 								[audioDic addObject:newRec];
+							}
+						}
+					}
+					
+					// Надо проверить есть ли в массиве видео, если сначала картинка, то видео будет в массиве
+					BOOL isVideo = FALSE;
+					NSArray *attachmentsV = [post objectForKey:@"attachments"];
+					NSMutableArray *videoDic = [NSMutableArray array];
+					if (attachmentsV) {
+						for (int i = 0; i < [attachmentsV count]; i++) {
+							NSDictionary *video = [attachmentsV objectAtIndex:i];
+							if ([[video objectForKey:@"type"] isEqual:@"video"]) {
+								isVideo = TRUE;
+								NSDictionary *videoRec = [video objectForKey:@"video"];
+								//NSLog(@"Audio Rec: %@", audioRec);
+								//NSLog(@"Audio AID class: %@", [[audioRec objectForKey:@"aid"] class]);
+								NSNumber *aid = [videoRec objectForKey:@"vid"];
+								NSNumber *uid = [videoRec objectForKey:@"owner_id"];
+								NSDictionary *newRec = [NSDictionary dictionaryWithObjectsAndKeys:aid, @"aid", uid, @"id", nil];
+								[videoDic addObject:newRec];
 							}
 						}
 					}
@@ -1510,7 +1574,14 @@ static NSImage *icon1, *icon2, *icon3, *icon4, *icon5, *icon11, *icon21, *icon31
 								} else {
 									photoLink = [attachment objectForKey:@"video"];
 									if (photoLink) {
-										// Фотография
+										// Другой тип, видео
+										NSArray *videoRecords = [self getVideo:videoDic];
+										if (videoRecords) {
+											[newUserRecord setObject:[videoRecords objectAtIndex:0] forKey:VIDEO];
+											[videoRecords release];
+											//[newUserRecord setObject:[NSNumber numberWithUnsignedInt:kNewsTypeG4] forKey:@"newsType"];
+										}
+										// Фотография для замены видео, оно будет открываться в отдельном окне
 										NSImage *atPic = [[NSImage alloc] initWithContentsOfURL:[NSURL URLWithString:[photoLink objectForKey:@"image_big"]]];
 										[newUserRecord setObject:atPic forKey:ATTACHMENTSPHOTO];
 										[atPic release];
@@ -1645,7 +1716,14 @@ static NSImage *icon1, *icon2, *icon3, *icon4, *icon5, *icon11, *icon21, *icon31
 								} else {
 									photoLink = [attachment objectForKey:@"video"];
 									if (photoLink) {
-										// Фотография
+										// Другой тип, видео
+										NSArray *videoRecords = [self getVideo:videoDic];
+										if (videoRecords) {
+											[newUserRecord setObject:[videoRecords objectAtIndex:0] forKey:VIDEO];
+											[videoRecords release];
+											//[newUserRecord setObject:[NSNumber numberWithUnsignedInt:kNewsTypeG4] forKey:@"newsType"];
+										}
+										// Фотография для замены видео, оно будет открываться в отдельном окне
 										NSImage *atPic = [[NSImage alloc] initWithContentsOfURL:[NSURL URLWithString:[photoLink objectForKey:@"image_big"]]];
 										[newUserRecord setObject:atPic forKey:ATTACHMENTSPHOTO];
 										[atPic release];
@@ -1769,7 +1847,14 @@ static NSImage *icon1, *icon2, *icon3, *icon4, *icon5, *icon11, *icon21, *icon31
 								} else {
 									photoLink = [attachment objectForKey:@"video"];
 									if (photoLink) {
-										// Фотография
+										// Другой тип, видео
+										NSArray *videoRecords = [self getVideo:videoDic];
+										if (videoRecords) {
+											[newUserRecord setObject:[videoRecords objectAtIndex:0] forKey:VIDEO];
+											[videoRecords release];
+											//[newUserRecord setObject:[NSNumber numberWithUnsignedInt:kNewsTypeG4] forKey:@"newsType"];
+										}
+										// Фотография для замены видео, оно будет открываться в отдельном окне
 										NSImage *atPic = [[NSImage alloc] initWithContentsOfURL:[NSURL URLWithString:[photoLink objectForKey:@"image_big"]]];
 										[newUserRecord setObject:atPic forKey:ATTACHMENTSPHOTO];
 										[atPic release];
@@ -1875,7 +1960,14 @@ static NSImage *icon1, *icon2, *icon3, *icon4, *icon5, *icon11, *icon21, *icon31
 								} else {
 									photoLink = [attachment objectForKey:@"video"];
 									if (photoLink) {
-										// Фотография
+										// Другой тип, видео
+										NSArray *videoRecords = [self getVideo:videoDic];
+										if (videoRecords) {
+											[newUserRecord setObject:[videoRecords objectAtIndex:0] forKey:VIDEO];
+											[videoRecords release];
+											//[newUserRecord setObject:[NSNumber numberWithUnsignedInt:kNewsTypeG4] forKey:@"newsType"];
+										}
+										// Фотография для замены видео, оно будет открываться в отдельном окне
 										NSImage *atPic = [[NSImage alloc] initWithContentsOfURL:[NSURL URLWithString:[photoLink objectForKey:@"image_big"]]];
 										[newUserRecord setObject:atPic forKey:ATTACHMENTSPHOTO];
 										[atPic release];
@@ -1983,13 +2075,13 @@ static NSImage *icon1, *icon2, *icon3, *icon4, *icon5, *icon11, *icon21, *icon31
 - (IBAction) btnInCellClicked:(id)sender {
     NSInteger row = [_wall rowForView:sender];
 	if (row == -1) {
-		// Проверим, если мы в новосят или на стене
+		// Проверим, если мы в новостях или на стене
 		row = [[_wall selectedCellRowIndex] integerValue];
 		if (row == -1) {
 			return;
 		}
 	}
-
+	
 	TableDataSource *table = (id)_wall.dataSource;
 	NSArray *tableArray = table.tableSet;
     NSDictionary *entity = [tableArray objectAtIndex:row];
@@ -2001,13 +2093,15 @@ static NSImage *icon1, *icon2, *icon3, *icon4, *icon5, *icon11, *icon21, *icon31
 		NSArray *audio = [entity objectForKey:AUDIO];
 		if (audio) {
 			// Ищем индекс в таблице аудио
-			ATNewsCellOne6 *cell = [_wall selectedCell];
-			rowAudio = [cell.wall rowForView:sender];
-			NSDictionary *audioRec = [audio objectAtIndex:rowAudio];
-			url = [audioRec objectForKey:URL];
+			ATNewsCellOne6 *cell = [_wall viewAtColumn:0 row:row makeIfNecessary:NO];
+			if (cell) {
+				rowAudio = [cell.wall rowForView:sender];
+				NSDictionary *audioRec = [audio objectAtIndex:rowAudio];
+				url = [audioRec objectForKey:URLALL];
+			}
 		}
 	} else {
-		url = [entity objectForKey:URL];
+		url = [entity objectForKey:URLALL];
 	}
 	
 	if (!url) {
@@ -2016,15 +2110,16 @@ static NSImage *icon1, *icon2, *icon3, *icon4, *icon5, *icon11, *icon21, *icon31
 	
 	// NSGoRightTemplate
 	// NSStopProgressTemplate
-	if (currentSoundRow != -1) {
+	if (currentPlay) {
 		// Значит что-то играет
-		if (currentSoundRow == row) {
+		if ([currentPlay isEqualTo:sender]) {
 			// Значит нажали на этой же и если играет, надо остановить
 			if ([sound isPlaying]) {
 				[sound stop];
 				[sound release];
 				sound = nil;
 				[(NSButton *)sender setImage:[NSImage imageNamed:@"NSGoRightTemplate"]];
+				currentPlay = nil;
 			} else {
 				// Не играет
 				sound = [[NSSound alloc] initWithContentsOfURL:[NSURL URLWithString:url] byReference:NO];
@@ -2034,7 +2129,7 @@ static NSImage *icon1, *icon2, *icon3, *icon4, *icon5, *icon11, *icon21, *icon31
 		} else {
 			// Остановить предыдущую и начать новую
 			// Найти кнопку, которую надо остановить
-			currentSoundRow = row;
+			//currentSoundRow = row;
 			if ([sound isPlaying]) {
 				[sound stop];
 				[sound release];
@@ -2048,7 +2143,7 @@ static NSImage *icon1, *icon2, *icon3, *icon4, *icon5, *icon11, *icon21, *icon31
 		}
 	} else {
 		// Только нажали
-		currentSoundRow = row;
+		//currentSoundRow = row;
 		sound = [[NSSound alloc] initWithContentsOfURL:[NSURL URLWithString:url] byReference:NO];
 		[sound play];
 		[(NSButton *)sender setImage:[NSImage imageNamed:@"NSStopProgressTemplate"]];
@@ -2059,6 +2154,11 @@ static NSImage *icon1, *icon2, *icon3, *icon4, *icon5, *icon11, *icon21, *icon31
 // Perform cleanup when the application terminates
 - (void) applicationWillTerminate:(NSNotification*)notification
 {	
+	if (videoWindow) {
+        [videoWindow release];
+        videoWindow = nil;
+    }
+	
 	[icon1 release];
 	[icon2 release];
 	[icon3 release];
@@ -2175,6 +2275,96 @@ static NSImage *icon1, *icon2, *icon3, *icon4, *icon5, *icon11, *icon21, *icon31
 	[table setTableSet:audioArray];
 	table.choice = kAudio;
 	[_wall reloadData];
+}
+
+- (IBAction) closeVideo:(id)sender
+{
+	NSDisableScreenUpdates();
+    if (videoWindow) {
+		// Destroy window if it exists.
+		[[videoWebView mainFrame] loadHTMLString:@"" baseURL:nil];
+		[[currentSender window] removeChildWindow:videoWindow];
+		[videoWindow orderOut:self];
+		// TO DO потенциально занимает память
+		// при освобождении также освобождает view
+		//[videoWindow release];
+		videoWindow = nil;
+		currentSender = nil;
+    }
+    NSEnableScreenUpdates();
+}
+
+- (IBAction) openVideo:(id)sender
+{
+	if ([sender isEqual:currentSender]) {
+		return;
+	}
+	
+	if ([sound isPlaying]) {
+		[sound stop];
+		[sound release];
+		sound = nil;
+		[(NSButton *)currentPlay setImage:[NSImage imageNamed:@"NSGoRightTemplate"]];
+		currentPlay = nil;
+	}
+	
+	if (videoWindow) {
+		if (currentSender) {
+			[[currentSender window] removeChildWindow:videoWindow];
+		}
+		[videoWindow orderOut:self];
+		[[videoWebView mainFrame] loadHTMLString:@"" baseURL:nil];
+        [videoWindow release];
+        videoWindow = nil;
+    }
+	
+	NSInteger row = [_wall rowForView:sender];
+	if (row == -1) {
+		// Проверим, если мы в новостях или на стене
+		row = [[_wall selectedCellRowIndex] integerValue];
+		if (row == -1) {
+			return;
+		}
+	}
+	
+	TableDataSource *table = (id)_wall.dataSource;
+	NSArray *tableArray = table.tableSet;
+    NSDictionary *entity = [tableArray objectAtIndex:row];
+	NSString *url = [entity objectForKey:VIDEO];
+	
+	if (!url) {
+		return;
+	}
+	
+	// Video
+	[[videoWebView mainFrame] loadHTMLString:url baseURL:nil];
+	
+	//ATButton *pt = (ATButton *)sender;
+	//NSLog(@"%@", [sender class]);
+	//NSPoint p = pt.point;
+	NSRect p = [sender frame];
+	//p.origin.x = +100;
+	//p.origin.y = +100;
+	NSPoint buttonPoint = NSMakePoint(NSMidX(p),
+									  NSMidY(p));
+	videoWindow = [[MAAttachedWindow alloc] initWithView:videoView 
+										 attachedToPoint:buttonPoint 
+												inWindow:[sender window] 
+												  onSide:MAPositionRight 
+											  atDistance:0.0f];
+	//[videoWindow setBorderColor:[borderColorWell color]];
+	//[videoWindow setBackgroundColor:[backgroundColorWell color]];
+	[videoWindow setViewMargin:10.0f];
+	//[videoWindow setBorderWidth:[borderWidthSlider floatValue]];
+	//[videoWindow setCornerRadius:[cornerRadiusSlider floatValue]];
+	[videoWindow setHasArrow:NO];
+	//[videoWindow setDrawsRoundCornerBesideArrow: ([drawRoundCornerBesideArrowCheckbox state] == NSOnState)];
+	//[videoWindow setArrowBaseWidth:[arrowBaseWidthSlider floatValue]];
+	[videoWindow setArrowHeight:30.0f];
+	
+	[[sender window] addChildWindow:videoWindow ordered:NSWindowAbove];
+	currentSender = sender;
+	[videoWindow makeKeyAndOrderFront:_window];
 }
 
 @end
